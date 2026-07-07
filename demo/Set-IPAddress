@@ -1,0 +1,112 @@
+<#
+.SYNOPSIS
+    Sets a static IP address on a specified network adapter.
+
+.DESCRIPTION
+    Configures a static IPv4 address (and optional prefix length, gateway,
+    and DNS servers) on the given network interface (NIC).
+
+.PARAMETER NicName
+    The name of the network adapter (as shown by Get-NetAdapter), e.g. "Ethernet".
+
+.PARAMETER IPAddress
+    The static IP address to assign, e.g. "192.168.1.50".
+
+.PARAMETER PrefixLength
+    The subnet prefix length (CIDR notation). Default is 24 (255.255.255.0).
+
+.PARAMETER Gateway
+    Optional default gateway address.
+
+.PARAMETER DnsServers
+    Optional array of DNS server addresses.
+
+.EXAMPLE
+    .\Set-NicIPAddress.ps1 -NicName "Ethernet" -IPAddress "192.168.1.50"
+
+.EXAMPLE
+    .\Set-NicIPAddress.ps1 -NicName "Ethernet0" -IPAddress "10.0.0.10" -PrefixLength 24 -Gateway "10.0.0.1" -DnsServers "8.8.8.8","8.8.4.4"
+
+.NOTES
+    Must be run in an elevated (Administrator) PowerShell session.
+#>
+
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$NicName,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateScript({
+        [System.Net.IPAddress]::TryParse($_, [ref]$null)
+    })]
+    [string]$IPAddress,
+
+    [Parameter(Mandatory = $false)]
+    [ValidateRange(1, 32)]
+    [int]$PrefixLength = 24,
+
+    [Parameter(Mandatory = $false)]
+    [string]$Gateway,
+
+    [Parameter(Mandatory = $false)]
+    [string[]]$DnsServers
+)
+
+# Ensure the script is running elevated
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "This script must be run as Administrator."
+    exit 1
+}
+
+# Verify the adapter exists
+$adapter = Get-NetAdapter -Name $NicName -ErrorAction SilentlyContinue
+if (-not $adapter) {
+    Write-Error "Network adapter '$NicName' was not found. Available adapters:"
+    Get-NetAdapter | Select-Object Name, InterfaceDescription, Status | Format-Table -AutoSize
+    exit 1
+}
+
+Write-Host "Configuring adapter '$NicName'..." -ForegroundColor Cyan
+
+# Remove any existing IPv4 addresses on this adapter to avoid conflicts
+$existingIPs = Get-NetIPAddress -InterfaceAlias $NicName -AddressFamily IPv4 -ErrorAction SilentlyContinue
+if ($existingIPs) {
+    foreach ($ip in $existingIPs) {
+        Remove-NetIPAddress -InterfaceAlias $NicName -IPAddress $ip.IPAddress -Confirm:$false -ErrorAction SilentlyContinue
+    }
+}
+
+# Remove existing default gateway on this interface, if any, before setting a new one
+$existingRoute = Get-NetRoute -InterfaceAlias $NicName -DestinationPrefix "0.0.0.0/0" -ErrorAction SilentlyContinue
+if ($existingRoute) {
+    Remove-NetRoute -InterfaceAlias $NicName -DestinationPrefix "0.0.0.0/0" -Confirm:$false -ErrorAction SilentlyContinue
+}
+
+try {
+    if ($Gateway) {
+        New-NetIPAddress -InterfaceAlias $NicName -IPAddress $IPAddress -PrefixLength $PrefixLength -DefaultGateway $Gateway -ErrorAction Stop | Out-Null
+    }
+    else {
+        New-NetIPAddress -InterfaceAlias $NicName -IPAddress $IPAddress -PrefixLength $PrefixLength -ErrorAction Stop | Out-Null
+    }
+    Write-Host "IP address $IPAddress/$PrefixLength assigned to '$NicName'." -ForegroundColor Green
+}
+catch {
+    Write-Error "Failed to set IP address: $_"
+    exit 1
+}
+
+if ($DnsServers) {
+    try {
+        Set-DnsClientServerAddress -InterfaceAlias $NicName -ServerAddresses $DnsServers -ErrorAction Stop
+        Write-Host "DNS servers set to: $($DnsServers -join ', ')" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to set DNS servers: $_"
+    }
+}
+
+Write-Host "`nCurrent configuration for '$NicName':" -ForegroundColor Cyan
+Get-NetIPAddress -InterfaceAlias $NicName -AddressFamily IPv4 | Format-Table IPAddress, PrefixLength, InterfaceAlias -AutoSize

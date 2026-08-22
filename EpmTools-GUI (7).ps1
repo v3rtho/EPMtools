@@ -1,4 +1,4 @@
-﻿#Requires -Version 5.1
+﻿# Requires -Version 5.1
 <#
 .SYNOPSIS
     WPF GUI Wrapper for the EpmTools PowerShell Module

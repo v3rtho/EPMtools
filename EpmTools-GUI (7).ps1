@@ -1,4 +1,4 @@
-﻿# Requires -Version 5.1
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     WPF GUI Wrapper for the EpmTools PowerShell Module
@@ -55,27 +55,27 @@ Add-Type -AssemblyName System.Windows.Forms
     Height="900" Width="1100"
     MinHeight="700" MinWidth="850"
     WindowStartupLocation="CenterScreen"
-    Background="#0F1117"
-    Foreground="#E2E8F0"
+    Background="#17181C"
+    Foreground="#E8E6E1"
     FontFamily="Segoe UI">
 
     <Window.Resources>
         <!-- Colours -->
-        <SolidColorBrush x:Key="PrimaryBg"     Color="#0F1117"/>
-        <SolidColorBrush x:Key="SurfaceBg"     Color="#1A1D27"/>
-        <SolidColorBrush x:Key="CardBg"        Color="#21253A"/>
-        <SolidColorBrush x:Key="AccentBlue"    Color="#3B82F6"/>
-        <SolidColorBrush x:Key="AccentGreen"   Color="#22C55E"/>
-        <SolidColorBrush x:Key="AccentOrange"  Color="#F59E0B"/>
-        <SolidColorBrush x:Key="AccentRed"     Color="#EF4444"/>
-        <SolidColorBrush x:Key="BorderColor"   Color="#2D3252"/>
-        <SolidColorBrush x:Key="TextPrimary"   Color="#E2E8F0"/>
-        <SolidColorBrush x:Key="TextSecondary" Color="#8892AA"/>
-        <SolidColorBrush x:Key="TextMuted"     Color="#4B5563"/>
+        <SolidColorBrush x:Key="PrimaryBg"     Color="#17181C"/>
+        <SolidColorBrush x:Key="SurfaceBg"     Color="#1F2023"/>
+        <SolidColorBrush x:Key="CardBg"        Color="#26272B"/>
+        <SolidColorBrush x:Key="AccentBlue"    Color="#C97B3D"/>
+        <SolidColorBrush x:Key="AccentGreen"   Color="#5FA88A"/>
+        <SolidColorBrush x:Key="AccentOrange"  Color="#D9A441"/>
+        <SolidColorBrush x:Key="AccentRed"     Color="#C1554A"/>
+        <SolidColorBrush x:Key="BorderColor"   Color="#35363B"/>
+        <SolidColorBrush x:Key="TextPrimary"   Color="#E8E6E1"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#A3A29E"/>
+        <SolidColorBrush x:Key="TextMuted"     Color="#6B6A66"/>
 
         <!-- Button Style -->
         <Style x:Key="ActionButton" TargetType="Button">
-            <Setter Property="Background"   Value="#3B82F6"/>
+            <Setter Property="Background"   Value="#C97B3D"/>
             <Setter Property="Foreground"   Value="#FFFFFF"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding"      Value="14,8"/>
@@ -93,14 +93,14 @@ Add-Type -AssemblyName System.Windows.Forms
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2563EB"/>
+                                <Setter Property="Background" Value="#B2692F"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#1D4ED8"/>
+                                <Setter Property="Background" Value="#9C5827"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#374151"/>
-                                <Setter Property="Foreground" Value="#6B7280"/>
+                                <Setter Property="Background" Value="#3A3B40"/>
+                                <Setter Property="Foreground" Value="#7A7975"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -110,20 +110,20 @@ Add-Type -AssemblyName System.Windows.Forms
 
         <!-- Secondary Button -->
         <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
-            <Setter Property="Background" Value="#2D3252"/>
+            <Setter Property="Background" Value="#35363B"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#374270"/>
+                    <Setter Property="Background" Value="#3D3E45"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <!-- Danger Button -->
         <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
-            <Setter Property="Background" Value="#7F1D1D"/>
+            <Setter Property="Background" Value="#6B3630"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#991B1B"/>
+                    <Setter Property="Background" Value="#7D453C"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -131,7 +131,7 @@ Add-Type -AssemblyName System.Windows.Forms
         <!-- Nav Button -->
         <Style x:Key="NavButton" TargetType="RadioButton">
             <Setter Property="Background"       Value="Transparent"/>
-            <Setter Property="Foreground"       Value="#8892AA"/>
+            <Setter Property="Foreground"       Value="#A3A29E"/>
             <Setter Property="BorderThickness"  Value="0"/>
             <Setter Property="Padding"          Value="12,10"/>
             <Setter Property="FontSize"         Value="13"/>
@@ -147,12 +147,12 @@ Add-Type -AssemblyName System.Windows.Forms
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#21253A"/>
-                                <Setter Property="Foreground" Value="#E2E8F0"/>
+                                <Setter TargetName="Border" Property="Background" Value="#26272B"/>
+                                <Setter Property="Foreground" Value="#E8E6E1"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#1A1D27"/>
-                                <Setter Property="Foreground" Value="#CBD5E1"/>
+                                <Setter TargetName="Border" Property="Background" Value="#1F2023"/>
+                                <Setter Property="Foreground" Value="#C7C5C0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -162,10 +162,10 @@ Add-Type -AssemblyName System.Windows.Forms
 
         <!-- TextBox Style -->
         <Style x:Key="InputBox" TargetType="TextBox">
-            <Setter Property="Background"      Value="#21253A"/>
-            <Setter Property="Foreground"      Value="#E2E8F0"/>
-            <Setter Property="CaretBrush"      Value="#3B82F6"/>
-            <Setter Property="BorderBrush"     Value="#2D3252"/>
+            <Setter Property="Background"      Value="#26272B"/>
+            <Setter Property="Foreground"      Value="#E8E6E1"/>
+            <Setter Property="CaretBrush"      Value="#C97B3D"/>
+            <Setter Property="BorderBrush"     Value="#35363B"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding"         Value="10,7"/>
             <Setter Property="FontSize"        Value="12"/>
@@ -183,7 +183,7 @@ Add-Type -AssemblyName System.Windows.Forms
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="BorderBrush" Value="#3B82F6"/>
+                                <Setter Property="BorderBrush" Value="#C97B3D"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -193,9 +193,9 @@ Add-Type -AssemblyName System.Windows.Forms
 
         <!-- ComboBox Style -->
         <Style x:Key="StyledCombo" TargetType="ComboBox">
-            <Setter Property="Background"      Value="#21253A"/>
-            <Setter Property="Foreground"      Value="#E2E8F0"/>
-            <Setter Property="BorderBrush"     Value="#2D3252"/>
+            <Setter Property="Background"      Value="#26272B"/>
+            <Setter Property="Foreground"      Value="#E8E6E1"/>
+            <Setter Property="BorderBrush"     Value="#35363B"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding"         Value="10,7"/>
             <Setter Property="FontSize"        Value="12"/>
@@ -203,14 +203,14 @@ Add-Type -AssemblyName System.Windows.Forms
 
         <!-- DataGrid Style -->
         <Style x:Key="ResultGrid" TargetType="DataGrid">
-            <Setter Property="Background"            Value="#1A1D27"/>
-            <Setter Property="Foreground"            Value="#E2E8F0"/>
-            <Setter Property="BorderBrush"           Value="#2D3252"/>
+            <Setter Property="Background"            Value="#1F2023"/>
+            <Setter Property="Foreground"            Value="#E8E6E1"/>
+            <Setter Property="BorderBrush"           Value="#35363B"/>
             <Setter Property="BorderThickness"       Value="1"/>
             <Setter Property="GridLinesVisibility"   Value="Horizontal"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="#2D3252"/>
-            <Setter Property="RowBackground"         Value="#1A1D27"/>
-            <Setter Property="AlternatingRowBackground" Value="#1E2235"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#35363B"/>
+            <Setter Property="RowBackground"         Value="#1F2023"/>
+            <Setter Property="AlternatingRowBackground" Value="#232428"/>
             <Setter Property="FontSize"              Value="12"/>
             <Setter Property="AutoGenerateColumns"   Value="True"/>
             <Setter Property="IsReadOnly"            Value="True"/>
@@ -220,12 +220,12 @@ Add-Type -AssemblyName System.Windows.Forms
             <Setter Property="ColumnHeaderStyle">
                 <Setter.Value>
                     <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background"  Value="#21253A"/>
-                        <Setter Property="Foreground"  Value="#8892AA"/>
+                        <Setter Property="Background"  Value="#26272B"/>
+                        <Setter Property="Foreground"  Value="#A3A29E"/>
                         <Setter Property="Padding"     Value="10,6"/>
                         <Setter Property="FontSize"    Value="11"/>
                         <Setter Property="FontWeight"  Value="SemiBold"/>
-                        <Setter Property="BorderBrush" Value="#2D3252"/>
+                        <Setter Property="BorderBrush" Value="#35363B"/>
                         <Setter Property="BorderThickness" Value="0,0,0,1"/>
                     </Style>
                 </Setter.Value>
@@ -235,10 +235,10 @@ Add-Type -AssemblyName System.Windows.Forms
                     <Style TargetType="DataGridCell">
                         <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="Padding"         Value="10,5"/>
-                        <Setter Property="Foreground"      Value="#E2E8F0"/>
+                        <Setter Property="Foreground"      Value="#E8E6E1"/>
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#2D3252"/>
+                                <Setter Property="Background" Value="#35363B"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -254,31 +254,31 @@ Add-Type -AssemblyName System.Windows.Forms
         </Grid.ColumnDefinitions>
 
         <!-- ── SIDEBAR ── -->
-        <Border Grid.Column="0" Background="#1A1D27"
-                BorderBrush="#2D3252" BorderThickness="0,0,1,0">
+        <Border Grid.Column="0" Background="#1F2023"
+                BorderBrush="#35363B" BorderThickness="0,0,1,0">
             <DockPanel>
                 <!-- Logo / Title -->
                 <StackPanel DockPanel.Dock="Top" Margin="16,24,16,20">
                     <TextBlock Text="⚡ EpmTools" FontSize="18" FontWeight="Bold"
-                               Foreground="#E2E8F0"/>
+                               Foreground="#E8E6E1"/>
                     <TextBlock Text="Endpoint Privilege Management"
-                               FontSize="10" Foreground="#4B5563" Margin="0,3,0,0"
+                               FontSize="10" Foreground="#6B6A66" Margin="0,3,0,0"
                                TextWrapping="Wrap"/>
                 </StackPanel>
 
                 <!-- Module Status -->
                 <Border DockPanel.Dock="Top" Margin="12,0,12,16"
-                        Background="#21253A" CornerRadius="8" Padding="12,10">
+                        Background="#26272B" CornerRadius="8" Padding="12,10">
                     <StackPanel>
                         <TextBlock Text="MODULE STATUS" FontSize="9" FontWeight="Bold"
-                                   Foreground="#4B5563"
+                                   Foreground="#6B6A66"
                                    Margin="0,0,0,6"/>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Ellipse x:Name="StatusDot" Width="8" Height="8"
-                                     Fill="#EF4444" Margin="0,0,8,0"
+                                     Fill="#C1554A" Margin="0,0,8,0"
                                      VerticalAlignment="Center"/>
                             <TextBlock x:Name="StatusText" Text="Not Loaded"
-                                       FontSize="12" Foreground="#8892AA"
+                                       FontSize="12" Foreground="#A3A29E"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
@@ -287,7 +287,7 @@ Add-Type -AssemblyName System.Windows.Forms
                 <!-- Navigation -->
                 <StackPanel DockPanel.Dock="Top" Margin="8,0">
                     <TextBlock Text="CMDLETS" FontSize="9" FontWeight="Bold"
-                               Foreground="#4B5563" Margin="12,0,0,8"/>
+                               Foreground="#6B6A66" Margin="12,0,0,8"/>
 
                     <RadioButton x:Name="navHome" Style="{StaticResource NavButton}"
                                  IsChecked="True">Dashboard</RadioButton>
@@ -303,11 +303,16 @@ Add-Type -AssemblyName System.Windows.Forms
                     <RadioButton x:Name="navClientSettings" Style="{StaticResource NavButton}">Get-ClientSettings</RadioButton>
 
                     <RadioButton x:Name="navFileAttributes" Style="{StaticResource NavButton}">Get-FileAttributes</RadioButton>
+
+                    <Separator Background="#35363B" Margin="4,10"/>
+                    <TextBlock Text="REPORTS" FontSize="9" FontWeight="Bold"
+                               Foreground="#6B6A66" Margin="12,0,0,8"/>
+                    <RadioButton x:Name="navReports" Style="{StaticResource NavButton}">Reports</RadioButton>
                 </StackPanel>
 
                 <!-- Load module button at bottom -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="12,0,12,16">
-                    <Separator Background="#2D3252" Margin="0,0,0,12"/>
+                    <Separator Background="#35363B" Margin="0,0,0,12"/>
                     <Button x:Name="btnLoadModule" Style="{StaticResource ActionButton}"
                             Content="⚡  Load EpmTools Module" Padding="12,9"
                             FontSize="12"/>
@@ -319,7 +324,7 @@ Add-Type -AssemblyName System.Windows.Forms
         </Border>
 
         <!-- ── MAIN CONTENT ── -->
-        <Grid Grid.Column="1" Background="#0F1117">
+        <Grid Grid.Column="1" Background="#17181C">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -327,8 +332,8 @@ Add-Type -AssemblyName System.Windows.Forms
             </Grid.RowDefinitions>
 
             <!-- Top Bar -->
-            <Border Grid.Row="0" Background="#1A1D27"
-                    BorderBrush="#2D3252" BorderThickness="0,0,0,1"
+            <Border Grid.Row="0" Background="#1F2023"
+                    BorderBrush="#35363B" BorderThickness="0,0,0,1"
                     Padding="20,14">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -338,20 +343,20 @@ Add-Type -AssemblyName System.Windows.Forms
                     <StackPanel Grid.Column="0">
                         <TextBlock x:Name="PageTitle" Text="Dashboard"
                                    FontSize="18" FontWeight="SemiBold"
-                                   Foreground="#E2E8F0"/>
+                                   Foreground="#E8E6E1"/>
                         <TextBlock x:Name="PageSubtitle"
                                    Text="EPM module overview and quick actions"
-                                   FontSize="12" Foreground="#8892AA" Margin="0,2,0,0"/>
+                                   FontSize="12" Foreground="#A3A29E" Margin="0,2,0,0"/>
                     </StackPanel>
                     <TextBlock Grid.Column="1" x:Name="ClockText"
-                               FontSize="11" Foreground="#4B5563"
+                               FontSize="11" Foreground="#6B6A66"
                                VerticalAlignment="Center" FontFamily="Consolas"/>
                 </Grid>
             </Border>
 
             <!-- Page Content (Cards / Panels) -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
-                          Background="#0F1117">
+                          Background="#17181C">
                 <Grid Margin="20">
 
                     <!-- ── PAGE: Dashboard ── -->
@@ -364,99 +369,99 @@ Add-Type -AssemblyName System.Windows.Forms
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <!-- Card 1 -->
-                            <Border Grid.Column="0" Background="#21253A"
+                            <Border Grid.Column="0" Background="#26272B"
                                     CornerRadius="10" Padding="16" Margin="0,0,8,0">
                                 <StackPanel>
                                     <TextBlock Text="📋" FontSize="22" Margin="0,0,0,8"/>
                                     <TextBlock Text="EPM Policies" FontSize="13"
-                                               FontWeight="SemiBold" Foreground="#E2E8F0"/>
+                                               FontWeight="SemiBold" Foreground="#E8E6E1"/>
                                     <TextBlock Text="Retrieve ElevationRules or ClientSettings policies from the EPM Agent."
-                                               FontSize="11" Foreground="#8892AA"
+                                               FontSize="11" Foreground="#A3A29E"
                                                TextWrapping="Wrap" Margin="0,4,0,0"/>
                                 </StackPanel>
                             </Border>
                             <!-- Card 2 -->
-                            <Border Grid.Column="1" Background="#21253A"
+                            <Border Grid.Column="1" Background="#26272B"
                                     CornerRadius="10" Padding="16" Margin="4,0,4,0">
                                 <StackPanel>
                                     <TextBlock Text="🛡️" FontSize="22" Margin="0,0,0,8"/>
                                     <TextBlock Text="Elevation Rules" FontSize="13"
-                                               FontWeight="SemiBold" Foreground="#E2E8F0"/>
+                                               FontWeight="SemiBold" Foreground="#E8E6E1"/>
                                     <TextBlock Text="Query EPM Agent lookup for rules by FileName or CertificatePayload."
-                                               FontSize="11" Foreground="#8892AA"
+                                               FontSize="11" Foreground="#A3A29E"
                                                TextWrapping="Wrap" Margin="0,4,0,0"/>
                                 </StackPanel>
                             </Border>
                             <!-- Card 3 -->
-                            <Border Grid.Column="2" Background="#21253A"
+                            <Border Grid.Column="2" Background="#26272B"
                                     CornerRadius="10" Padding="16" Margin="8,0,0,0">
                                 <StackPanel>
                                     <TextBlock Text="📁" FontSize="22" Margin="0,0,0,8"/>
                                     <TextBlock Text="File Attributes" FontSize="13"
-                                               FontWeight="SemiBold" Foreground="#E2E8F0"/>
+                                               FontWeight="SemiBold" Foreground="#E8E6E1"/>
                                     <TextBlock Text="Extract publisher and CA certificates from .exe files for rule building."
-                                               FontSize="11" Foreground="#8892AA"
+                                               FontSize="11" Foreground="#A3A29E"
                                                TextWrapping="Wrap" Margin="0,4,0,0"/>
                                 </StackPanel>
                             </Border>
                         </Grid>
 
                         <!-- Getting Started -->
-                        <Border Background="#21253A" CornerRadius="10" Padding="20">
+                        <Border Background="#26272B" CornerRadius="10" Padding="20">
                             <StackPanel>
                                 <TextBlock Text="Getting Started" FontSize="14"
-                                           FontWeight="SemiBold" Foreground="#E2E8F0"
+                                           FontWeight="SemiBold" Foreground="#E8E6E1"
                                            Margin="0,0,0,12"/>
                                 <StackPanel Margin="0,0,0,8">
-                                    <TextBlock FontSize="12" Foreground="#8892AA" TextWrapping="Wrap">
-                                        <Run Foreground="#3B82F6" FontWeight="SemiBold">1.</Run>
+                                    <TextBlock FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap">
+                                        <Run Foreground="#C97B3D" FontWeight="SemiBold">1.</Run>
                                         <Run> Click </Run>
-                                        <Run Foreground="#E2E8F0" FontWeight="SemiBold">⚡ Load EpmTools Module</Run>
+                                        <Run Foreground="#E8E6E1" FontWeight="SemiBold">⚡ Load EpmTools Module</Run>
                                         <Run> in the sidebar to import EpmCmdlets.dll from the EPM Agent.</Run>
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="0,0,0,8">
-                                    <TextBlock FontSize="12" Foreground="#8892AA" TextWrapping="Wrap">
-                                        <Run Foreground="#3B82F6" FontWeight="SemiBold">2.</Run>
+                                    <TextBlock FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap">
+                                        <Run Foreground="#C97B3D" FontWeight="SemiBold">2.</Run>
                                         <Run> Navigate to a cmdlet tab, configure parameters, and click </Run>
-                                        <Run Foreground="#E2E8F0" FontWeight="SemiBold">Run</Run>
+                                        <Run Foreground="#E8E6E1" FontWeight="SemiBold">Run</Run>
                                         <Run>.</Run>
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel>
-                                    <TextBlock FontSize="12" Foreground="#8892AA" TextWrapping="Wrap">
-                                        <Run Foreground="#3B82F6" FontWeight="SemiBold">3.</Run>
+                                    <TextBlock FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap">
+                                        <Run Foreground="#C97B3D" FontWeight="SemiBold">3.</Run>
                                         <Run> Results appear in the grid above the output console. Use </Run>
-                                        <Run Foreground="#E2E8F0" FontWeight="SemiBold">Export CSV</Run>
+                                        <Run Foreground="#E8E6E1" FontWeight="SemiBold">Export CSV</Run>
                                         <Run> to save data.</Run>
                                     </TextBlock>
                                 </StackPanel>
 
-                                <Separator Background="#2D3252" Margin="0,16"/>
+                                <Separator Background="#35363B" Margin="0,16"/>
 
                                 <TextBlock Text="Module path:" FontSize="11"
-                                           Foreground="#4B5563" Margin="0,0,0,4"/>
+                                           Foreground="#6B6A66" Margin="0,0,0,4"/>
                                 <TextBlock Text="C:\Program Files\Microsoft EPM Agent\EpmTools\EpmCmdlets.dll"
                                            FontSize="11" FontFamily="Consolas"
-                                           Foreground="#22C55E" TextWrapping="Wrap"/>
+                                           Foreground="#5FA88A" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
 
                     <!-- ── PAGE: Get-Policies ── -->
                     <Border x:Name="panelPolicies" Visibility="Collapsed"
-                            Background="#21253A" CornerRadius="10" Padding="20">
+                            Background="#26272B" CornerRadius="10" Padding="20">
                         <StackPanel>
                             <TextBlock Text="Select policy type to retrieve:" FontSize="12"
-                                       Foreground="#8892AA" Margin="0,0,0,10"/>
+                                       Foreground="#A3A29E" Margin="0,0,0,10"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                 <RadioButton x:Name="rbElevationRules"
                                              Content="ElevationRules" IsChecked="True"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="PolicyType" Margin="0,0,20,0"/>
                                 <RadioButton x:Name="rbClientSettings"
                                              Content="ClientSettings"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="PolicyType"/>
                             </StackPanel>
                             <Button x:Name="btnRunGetPolicies"
@@ -468,21 +473,21 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <!-- ── PAGE: Get-DeclaredConfiguration ── -->
                     <Border x:Name="panelDeclaredConfig" Visibility="Collapsed"
-                            Background="#21253A" CornerRadius="10" Padding="20">
+                            Background="#26272B" CornerRadius="10" Padding="20">
                         <StackPanel>
                             <TextBlock Text="Retrieves all WinDC documents identifying policies targeted to this device."
-                                       FontSize="12" Foreground="#8892AA" TextWrapping="Wrap"
+                                       FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap"
                                        Margin="0,0,0,12"/>
 
-                            <TextBlock Text="Policy Type:" FontSize="11" Foreground="#4B5563" Margin="0,0,0,6"/>
+                            <TextBlock Text="Policy Type:" FontSize="11" Foreground="#6B6A66" Margin="0,0,0,6"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                 <RadioButton x:Name="rbDeclaredElevationRules"
                                              Content="ElevationRules" IsChecked="True"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="DeclaredPolicyType" Margin="0,0,12,0"/>
                                 <RadioButton x:Name="rbDeclaredClientSettings"
                                              Content="ClientSettings"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="DeclaredPolicyType"/>
                             </StackPanel>
 
@@ -495,21 +500,21 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <!-- ── PAGE: Get-DeclaredConfigurationAnalysis ── -->
                     <Border x:Name="panelDeclaredAnalysis" Visibility="Collapsed"
-                            Background="#21253A" CornerRadius="10" Padding="20">
+                            Background="#26272B" CornerRadius="10" Padding="20">
                         <StackPanel>
                             <TextBlock Text="Retrieves WinDC documents of type MSFTPolicies and checks if each policy is present in the EPM Agent (Processed column)."
-                                       FontSize="12" Foreground="#8892AA" TextWrapping="Wrap"
+                                       FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap"
                                        Margin="0,0,0,12"/>
 
-                            <TextBlock Text="Policy Type:" FontSize="11" Foreground="#4B5563" Margin="0,0,0,6"/>
+                            <TextBlock Text="Policy Type:" FontSize="11" Foreground="#6B6A66" Margin="0,0,0,6"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                 <RadioButton x:Name="rbAnalysisElevationRules"
                                              Content="ElevationRules" IsChecked="True"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="AnalysisPolicyType" Margin="0,0,12,0"/>
                                 <RadioButton x:Name="rbAnalysisClientSettings"
                                              Content="ClientSettings"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="AnalysisPolicyType"/>
                             </StackPanel>
 
@@ -522,23 +527,23 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <!-- ── PAGE: Get-ElevationRules ── -->
                     <Border x:Name="panelElevationRules" Visibility="Collapsed"
-                            Background="#21253A" CornerRadius="10" Padding="20">
+                            Background="#26272B" CornerRadius="10" Padding="20">
                         <StackPanel>
                             <TextBlock Text="Lookup type:" FontSize="12"
-                                       Foreground="#8892AA" Margin="0,0,0,6"/>
+                                       Foreground="#A3A29E" Margin="0,0,0,6"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                 <RadioButton x:Name="rbLookupFileName"
                                              Content="FileName" IsChecked="True"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="LookupType" Margin="0,0,20,0"/>
                                 <RadioButton x:Name="rbLookupCert"
                                              Content="CertificatePayload"
-                                             Foreground="#E2E8F0" FontSize="12"
+                                             Foreground="#E8E6E1" FontSize="12"
                                              GroupName="LookupType"/>
                             </StackPanel>
 
                             <TextBlock Text="Target value (file name or certificate payload):"
-                                       FontSize="12" Foreground="#8892AA" Margin="0,0,0,6"/>
+                                       FontSize="12" Foreground="#A3A29E" Margin="0,0,0,6"/>
                             <TextBox x:Name="txtElevationTarget"
                                      Style="{StaticResource InputBox}"
                                      Height="36" Margin="0,0,0,16"
@@ -553,10 +558,10 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <!-- ── PAGE: Get-ClientSettings ── -->
                     <Border x:Name="panelClientSettings" Visibility="Collapsed"
-                            Background="#21253A" CornerRadius="10" Padding="20">
+                            Background="#26272B" CornerRadius="10" Padding="20">
                         <StackPanel>
                             <TextBlock Text="Processes all existing client settings policies to display the effective settings used by EPM on this device."
-                                       FontSize="12" Foreground="#8892AA" TextWrapping="Wrap"
+                                       FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap"
                                        Margin="0,0,0,16"/>
                             <Button x:Name="btnRunClientSettings"
                                     Style="{StaticResource ActionButton}"
@@ -567,10 +572,10 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <!-- ── PAGE: Get-FileAttributes ── -->
                     <Border x:Name="panelFileAttributes" Visibility="Collapsed"
-                            Background="#21253A" CornerRadius="10" Padding="20">
+                            Background="#26272B" CornerRadius="10" Padding="20">
                         <StackPanel>
                             <TextBlock Text="Select an .exe file to extract its publisher and CA certificates:"
-                                       FontSize="12" Foreground="#8892AA" Margin="0,0,0,8"/>
+                                       FontSize="12" Foreground="#A3A29E" Margin="0,0,0,8"/>
 
                             <Grid Margin="0,0,0,16">
                                 <Grid.ColumnDefinitions>
@@ -582,7 +587,7 @@ Add-Type -AssemblyName System.Windows.Forms
                                          Grid.Column="0" Height="36"
                                          IsReadOnly="True"
                                          Text="No file selected…"
-                                         Foreground="#4B5563"/>
+                                         Foreground="#6B6A66"/>
                                 <Button x:Name="btnBrowseExe"
                                         Style="{StaticResource SecondaryButton}"
                                         Grid.Column="1" Content="Browse…"
@@ -590,7 +595,7 @@ Add-Type -AssemblyName System.Windows.Forms
                             </Grid>
 
                             <TextBlock Text="Output folder for extracted certificates:"
-                                       FontSize="12" Foreground="#8892AA" Margin="0,0,0,8"/>
+                                       FontSize="12" Foreground="#A3A29E" Margin="0,0,0,8"/>
                             <Grid Margin="0,0,0,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -613,19 +618,70 @@ Add-Type -AssemblyName System.Windows.Forms
                         </StackPanel>
                     </Border>
 
+                    <!-- ── PAGE: Reports ── -->
+                    <Border x:Name="panelReports" Visibility="Collapsed"
+                            Background="#26272B" CornerRadius="10" Padding="20">
+                        <StackPanel>
+
+                            <!-- Header -->
+                            <TextBlock Text="EPM Elevation Events"
+                                       FontSize="14" FontWeight="SemiBold"
+                                       Foreground="#E8E6E1" Margin="0,0,0,4"/>
+                            <TextBlock Text="Retrieve elevation events from Intune Endpoint Privilege Management via Microsoft Graph API."
+                                       FontSize="12" Foreground="#A3A29E"
+                                       TextWrapping="Wrap" Margin="0,0,0,24"/>
+
+                            <!-- Authentication -->
+                            <TextBlock Text="AUTHENTICATION" FontSize="9" FontWeight="Bold"
+                                       Foreground="#6B6A66" Margin="0,0,0,8"/>
+                            <TextBlock Text="Sign in with your browser. No extra modules required — uses OAuth2 with PKCE. Requires DeviceManagementManagedDevices.Read.All permission."
+                                       FontSize="11" Foreground="#A3A29E"
+                                       TextWrapping="Wrap" Margin="0,0,0,10"/>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="txtTenantId" Style="{StaticResource InputBox}"
+                                         Grid.Column="0" Height="36"
+                                         ToolTip="Tenant ID or domain (e.g. contoso.onmicrosoft.com) — leave blank to use default"/>
+                                <Button x:Name="btnConnectGraph" Style="{StaticResource ActionButton}"
+                                        Grid.Column="1" Content="Connect to Graph"
+                                        Padding="14,9" Margin="8,0,0,0"/>
+                            </Grid>
+                            <TextBlock x:Name="lblGraphStatus" Text="Not connected."
+                                       FontSize="12" Foreground="#6B6A66" Margin="0,0,0,24"/>
+
+                            <!-- Elevation Events report -->
+                            <TextBlock Text="ELEVATION EVENTS REPORT" FontSize="9" FontWeight="Bold"
+                                       Foreground="#6B6A66" Margin="0,0,0,8"/>
+                            <TextBlock FontSize="11" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,0,0,4">
+                                <Run>Endpoint: </Run>
+                                <Run FontFamily="Consolas" Foreground="#E0A868">GET /beta/deviceManagement/privilegeManagementElevations</Run>
+                            </TextBlock>
+                            <TextBlock Text="All pages are fetched automatically. Results populate the grid and raw output pane below."
+                                       FontSize="11" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,0,0,16"/>
+                            <Button x:Name="btnLoadElevationReport" Style="{StaticResource ActionButton}"
+                                    Content="▶  Load Elevation Events"
+                                    HorizontalAlignment="Left" Padding="16,9"
+                                    IsEnabled="False"/>
+
+                        </StackPanel>
+                    </Border>
+
                 </Grid>
             </ScrollViewer>
 
             <!-- ── OUTPUT / RESULTS PANE ── -->
-            <Grid Grid.Row="2" Background="#0F1117">
+            <Grid Grid.Row="2" Background="#17181C">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
                 <!-- Results Toolbar -->
-                <Border Grid.Row="0" Background="#1A1D27"
-                        BorderBrush="#2D3252" BorderThickness="0,1,0,0"
+                <Border Grid.Row="0" Background="#1F2023"
+                        BorderBrush="#35363B" BorderThickness="0,1,0,0"
                         Padding="16,8">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -634,7 +690,7 @@ Add-Type -AssemblyName System.Windows.Forms
                         </Grid.ColumnDefinitions>
                         <TextBlock x:Name="ResultLabel" Text="Output Console"
                                    FontSize="11" FontWeight="SemiBold"
-                                   Foreground="#8892AA" VerticalAlignment="Center"/>
+                                   Foreground="#A3A29E" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                             <Button x:Name="btnExportCsv"
                                     Style="{StaticResource SecondaryButton}"
@@ -651,19 +707,19 @@ Add-Type -AssemblyName System.Windows.Forms
                 </Border>
 
                 <!-- Tab: Grid vs Log -->
-                <TabControl Grid.Row="1" Background="#0F1117"
-                            BorderBrush="#2D3252" BorderThickness="0">
+                <TabControl Grid.Row="1" Background="#17181C"
+                            BorderBrush="#35363B" BorderThickness="0">
                     <TabControl.Resources>
                         <Style TargetType="TabItem">
-                            <Setter Property="Background"  Value="#1A1D27"/>
-                            <Setter Property="Foreground"  Value="#8892AA"/>
+                            <Setter Property="Background"  Value="#1F2023"/>
+                            <Setter Property="Foreground"  Value="#A3A29E"/>
                             <Setter Property="Padding"     Value="12,6"/>
                             <Setter Property="FontSize"    Value="11"/>
                             <Setter Property="BorderThickness" Value="0"/>
                             <Style.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#21253A"/>
-                                    <Setter Property="Foreground" Value="#E2E8F0"/>
+                                    <Setter Property="Background" Value="#26272B"/>
+                                    <Setter Property="Foreground" Value="#E8E6E1"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -671,8 +727,8 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <TabItem Header="📝  Console Log" IsSelected="True">
                         <TextBox x:Name="ConsoleLog"
-                                 Background="#0D1117"
-                                 Foreground="#22C55E"
+                                 Background="#121214"
+                                 Foreground="#5FA88A"
                                  FontFamily="Consolas"
                                  FontSize="11"
                                  IsReadOnly="True"
@@ -685,8 +741,8 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <TabItem Header="🗒️  Raw Output">
                         <TextBox x:Name="RawOutput"
-                                 Background="#0B0E13"
-                                 Foreground="#E2E8F0"
+                                 Background="#131315"
+                                 Foreground="#E8E6E1"
                                  FontFamily="Consolas"
                                  FontSize="12"
                                  IsReadOnly="True"
@@ -716,8 +772,20 @@ Add-Type -AssemblyName System.Windows.Forms
 $reader = [System.Xml.XmlNodeReader]::new($xaml)
 $window = [System.Windows.Markup.XamlReader]::Load($reader)
 
-$script:ModuleLoaded = $false
-$script:LastResults  = $null
+$script:ModuleLoaded  = $false
+$script:LastResults   = $null
+
+# Graph auth state (used by Reports panel — no external module required)
+$script:GraphToken    = $null
+$script:GraphRefresh  = $null
+$script:GraphExpiry   = [DateTime]::MinValue
+$script:GraphTenant   = 'common'
+$script:GraphClient   = '14d82eec-204b-4c2f-b7e8-296a70dab67e'   # Microsoft Graph Command Line Tools (public client)
+$script:GraphScope    = 'DeviceManagementManagedDevices.Read.All offline_access'
+$script:GraphRedirect = 'http://localhost:18880/'
+$script:AuthPs        = $null
+$script:AuthHandle    = $null
+$script:AuthTimer     = $null
 
 # -------------------------------------------------------------
 # Helper functions stored as $script: scriptblock variables.
@@ -747,13 +815,15 @@ $script:WriteLog = {
 $script:SetModuleStatus = {
     param([bool]$Loaded)
     if ($Loaded) {
-        $window.FindName('StatusDot').Fill        = [System.Windows.Media.Brushes]::LimeGreen
+        $ok = [System.Windows.Media.BrushConverter]::new().ConvertFromString('#5FA88A')
+        $window.FindName('StatusDot').Fill        = $ok
         $window.FindName('StatusText').Text       = "Loaded"
-        $window.FindName('StatusText').Foreground = [System.Windows.Media.Brushes]::LimeGreen
+        $window.FindName('StatusText').Foreground = $ok
     } else {
-        $window.FindName('StatusDot').Fill        = [System.Windows.Media.Brushes]::OrangeRed
+        $bad = [System.Windows.Media.BrushConverter]::new().ConvertFromString('#C1554A')
+        $window.FindName('StatusDot').Fill        = $bad
         $window.FindName('StatusText').Text       = "Not Loaded"
-        $window.FindName('StatusText').Foreground = [System.Windows.Media.Brushes]::OrangeRed
+        $window.FindName('StatusText').Foreground = $bad
     }
 }
 
@@ -762,7 +832,7 @@ $script:ShowPanel = {
     $panels = @(
         'panelHome','panelPolicies','panelDeclaredConfig',
         'panelDeclaredAnalysis','panelElevationRules',
-        'panelClientSettings','panelFileAttributes'
+        'panelClientSettings','panelFileAttributes','panelReports'
     )
     foreach ($p in $panels) {
         $el = $window.FindName($p)
@@ -825,6 +895,7 @@ $navMap = @{
     'navElevationRules'   = @{ Panel = 'panelElevationRules';   Title = 'Get-ElevationRules';                Sub = 'Query elevation rules by FileName or CertificatePayload' }
     'navClientSettings'   = @{ Panel = 'panelClientSettings';   Title = 'Get-ClientSettings';                Sub = 'Display effective client settings used by EPM' }
     'navFileAttributes'   = @{ Panel = 'panelFileAttributes';   Title = 'Get-FileAttributes';                Sub = 'Extract publisher and CA certs from an .exe for rule building' }
+    'navReports'          = @{ Panel = 'panelReports';          Title = 'Reports';                           Sub = 'Generate and export EPM reports' }
 }
 
 foreach ($key in $navMap.Keys) {
@@ -1168,7 +1239,7 @@ $window.FindName('btnBrowseExe').Add_Click({
     $ofd.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
     if ($ofd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
         $window.FindName('txtExePath').Text       = $ofd.FileName
-        $window.FindName('txtExePath').Foreground = [System.Windows.Media.Brushes]::White
+        $window.FindName('txtExePath').Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString('#E8E6E1')
     }
 })
 
@@ -1303,6 +1374,399 @@ $window.FindName('btnRunFileAttributes').Add_Click({
         & $script:WriteLog "Error: $($_.Exception.Message)" "ERR"
         & $script:WriteLog "All available parameters: $($paramNames -join ', ')" "INFO"
     }
+})
+
+# -------------------------------------------------------------
+# Reports — Microsoft Graph / EPM Elevation Events
+# (No external module required — pure OAuth2 PKCE via browser)
+# -------------------------------------------------------------
+$window.FindName('btnConnectGraph').Add_Click({
+    $tenantInput        = $window.FindName('txtTenantId').Text.Trim()
+    $script:GraphTenant = if ($tenantInput) { $tenantInput } else { 'common' }
+    $lblStatus          = $window.FindName('lblGraphStatus')
+
+    # Clean up any previous in-flight auth
+    if ($script:AuthTimer) { $script:AuthTimer.Stop(); $script:AuthTimer = $null }
+    if ($script:AuthPs)    { try { $script:AuthPs.Stop() } catch {} }
+
+    # PKCE: generate code_verifier and code_challenge
+    $raw       = New-Object byte[] 32
+    [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($raw)
+    $verifier  = [Convert]::ToBase64String($raw).TrimEnd('=').Replace('+','-').Replace('/','_')
+    $sha256    = [System.Security.Cryptography.SHA256]::Create()
+    $challenge = [Convert]::ToBase64String(
+                     $sha256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($verifier))
+                 ).TrimEnd('=').Replace('+','-').Replace('/','_')
+
+    # Build authorization URL
+    $eRedir  = [System.Uri]::EscapeDataString($script:GraphRedirect)
+    $eScope  = [System.Uri]::EscapeDataString($script:GraphScope)
+    $authUrl = "https://login.microsoftonline.com/$($script:GraphTenant)/oauth2/v2.0/authorize" +
+               "?client_id=$($script:GraphClient)&response_type=code" +
+               "&redirect_uri=$eRedir&scope=$eScope" +
+               "&code_challenge=$challenge&code_challenge_method=S256"
+
+    # Background runspace: start local HTTP listener, wait for redirect, exchange code for token
+    $authScript = {
+        param($clientId, $tenantId, $scope, $redirectUri, $verifier)
+        $r = @{ Success = $false; Token = $null; Refresh = $null; ExpiresIn = 3600; Account = 'Unknown'; Error = $null }
+        try {
+            $listener = [System.Net.HttpListener]::new()
+            $listener.Prefixes.Add($redirectUri)
+            $listener.Start()
+            $ctx = $listener.GetContext()   # blocks until browser redirects here
+
+            # Parse query string
+            $qs = @{}
+            foreach ($pair in ($ctx.Request.Url.Query.TrimStart('?') -split '&')) {
+                $kv = $pair -split '=', 2
+                if ($kv.Count -eq 2) { $qs[$kv[0]] = [System.Uri]::UnescapeDataString($kv[1].Replace('+',' ')) }
+            }
+
+            # Send a friendly page back to the browser
+            $html = '<html><meta charset="utf-8"><body style="font-family:Segoe UI;background:#17181C;color:#E8E6E1;padding:60px 80px"><h2>&#10003; Signed in</h2><p style="color:#A3A29E">Authentication complete. You can close this tab and return to EpmTools.</p></body></html>'
+            $buf  = [System.Text.Encoding]::UTF8.GetBytes($html)
+            $ctx.Response.ContentType     = 'text/html; charset=utf-8'
+            $ctx.Response.ContentLength64 = $buf.Length
+            $ctx.Response.OutputStream.Write($buf, 0, $buf.Length)
+            $ctx.Response.Close()
+            $listener.Stop()
+
+            if ($qs['error'])  { $r.Error = "$($qs['error']): $($qs['error_description'])"; return $r }
+            $code = $qs['code']
+            if (-not $code)    { $r.Error = 'No authorization code returned.'; return $r }
+
+            # Exchange authorization code for access token
+            $body = "client_id=$([System.Uri]::EscapeDataString($clientId))" +
+                    "&code=$([System.Uri]::EscapeDataString($code))" +
+                    "&redirect_uri=$([System.Uri]::EscapeDataString($redirectUri))" +
+                    "&grant_type=authorization_code" +
+                    "&code_verifier=$([System.Uri]::EscapeDataString($verifier))" +
+                    "&scope=$([System.Uri]::EscapeDataString($scope))"
+            $tok  = Invoke-RestMethod -Method POST -ErrorAction Stop `
+                        -ContentType 'application/x-www-form-urlencoded' `
+                        -Uri "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token" `
+                        -Body $body
+
+            $r.Token     = $tok.access_token
+            $r.Refresh   = $tok.refresh_token
+            $r.ExpiresIn = if ($tok.expires_in) { [int]$tok.expires_in } else { 3600 }
+            $r.Success   = $true
+
+            # Decode JWT payload to get signed-in UPN for display
+            try {
+                $p  = $tok.access_token.Split('.')[1]
+                $p += '=' * ((4 - $p.Length % 4) % 4)
+                $c  = [System.Text.Encoding]::UTF8.GetString(
+                          [Convert]::FromBase64String($p.Replace('-','+').Replace('_','/'))
+                      ) | ConvertFrom-Json
+                $r.Account = if ($c.upn) { $c.upn } elseif ($c.preferred_username) { $c.preferred_username } else { $c.oid }
+            } catch {}
+        } catch {
+            try { $listener.Stop() } catch {}
+            $r.Error = $_.Exception.Message
+        }
+        return $r
+    }
+
+    $ps = [System.Management.Automation.PowerShell]::Create()
+    [void]$ps.AddScript($authScript).AddParameters(@{
+        clientId    = $script:GraphClient
+        tenantId    = $script:GraphTenant
+        scope       = $script:GraphScope
+        redirectUri = $script:GraphRedirect
+        verifier    = $verifier
+    })
+    $script:AuthPs     = $ps
+    $script:AuthHandle = $ps.BeginInvoke()
+
+    # Open the default browser to the Microsoft login page
+    Start-Process $authUrl
+    $lblStatus.Text       = "Browser opened — sign in and return here."
+    $lblStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString('#D9A441')
+    $window.FindName('btnConnectGraph').IsEnabled = $false
+    & $script:WriteLog "Browser opened for Microsoft account sign-in." "INFO"
+
+    # DispatcherTimer polls every 500 ms until the background runspace completes
+    $t = [System.Windows.Threading.DispatcherTimer]::new()
+    $t.Interval = [TimeSpan]::FromMilliseconds(500)
+    $t.Add_Tick({
+        if (-not $script:AuthPs) { $script:AuthTimer.Stop(); $script:AuthTimer = $null; return }
+        $state = $script:AuthPs.InvocationStateInfo.State
+        if ($state -notin @('Running','NotStarted')) {
+            $script:AuthTimer.Stop()
+            $script:AuthTimer = $null
+            $window.FindName('btnConnectGraph').IsEnabled = $true
+            try {
+                $res = $script:AuthPs.EndInvoke($script:AuthHandle) | Select-Object -Last 1
+                if ($res -and $res.Success) {
+                    $script:GraphToken   = $res.Token
+                    $script:GraphRefresh = $res.Refresh
+                    $script:GraphExpiry  = (Get-Date).AddSeconds($res.ExpiresIn - 60)
+                    $window.FindName('lblGraphStatus').Text       = "Connected as: $($res.Account)"
+                    $window.FindName('lblGraphStatus').Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString('#5FA88A')
+                    $window.FindName('btnLoadElevationReport').IsEnabled = $true
+                    & $script:WriteLog "Signed in as $($res.Account). Token valid until $($script:GraphExpiry.ToString('HH:mm:ss'))." "OK"
+                } else {
+                    $window.FindName('lblGraphStatus').Text       = "Sign-in failed: $($res.Error)"
+                    $window.FindName('lblGraphStatus').Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString('#C1554A')
+                    & $script:WriteLog "Graph sign-in failed: $($res.Error)" "ERR"
+                }
+            } catch {
+                $window.FindName('lblGraphStatus').Text       = "Auth error: $($_.Exception.Message)"
+                $window.FindName('lblGraphStatus').Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString('#C1554A')
+                & $script:WriteLog "Auth error: $($_.Exception.Message)" "ERR"
+            }
+            $script:AuthPs = $null; $script:AuthHandle = $null
+        }
+    })
+    $script:AuthTimer = $t
+    $t.Start()
+})
+
+$window.FindName('btnLoadElevationReport').Add_Click({
+    & $script:WriteLog "Fetching EPM elevation events from Microsoft Graph..."
+    $window.Cursor = [System.Windows.Input.Cursors]::Wait
+    try {
+        # Silently refresh the access token if it has expired
+        if ($script:GraphRefresh -and (Get-Date) -ge $script:GraphExpiry) {
+            & $script:WriteLog "Access token expired — refreshing silently..." "INFO"
+            $body = "client_id=$([System.Uri]::EscapeDataString($script:GraphClient))" +
+                    "&refresh_token=$([System.Uri]::EscapeDataString($script:GraphRefresh))" +
+                    "&grant_type=refresh_token" +
+                    "&scope=$([System.Uri]::EscapeDataString($script:GraphScope))"
+            $tok  = Invoke-RestMethod -Method POST -ErrorAction Stop `
+                        -ContentType 'application/x-www-form-urlencoded' `
+                        -Uri "https://login.microsoftonline.com/$($script:GraphTenant)/oauth2/v2.0/token" `
+                        -Body $body
+            $script:GraphToken   = $tok.access_token
+            $script:GraphRefresh = $tok.refresh_token
+            $script:GraphExpiry  = (Get-Date).AddSeconds($tok.expires_in - 60)
+            & $script:WriteLog "Token refreshed. Valid until $($script:GraphExpiry.ToString('HH:mm:ss'))." "OK"
+        }
+
+        $headers  = @{ Authorization = "Bearer $($script:GraphToken)" }
+        $allItems = [System.Collections.Generic.List[object]]::new()
+        $uri      = 'https://graph.microsoft.com/beta/deviceManagement/privilegeManagementElevations'
+        do {
+            $response = Invoke-RestMethod -Uri $uri -Headers $headers -Method GET -ErrorAction Stop
+            if ($response.value) { foreach ($item in $response.value) { $allItems.Add($item) } }
+            $uri = $response.'@odata.nextLink'
+        } while ($uri)
+
+        if ($allItems.Count -eq 0) {
+            & $script:WriteLog "No elevation events returned." "WARN"
+            $window.FindName('ResultGrid').ItemsSource = $null
+            $window.FindName('RawOutput').Text         = ''
+            $window.Cursor = [System.Windows.Input.Cursors]::Arrow
+            return
+        }
+
+        $results = $allItems | ForEach-Object {
+            $ev = $_
+            $rawResult = "$($ev.result)"
+            [PSCustomObject]@{
+                EventDateTime   = $ev.eventDateTime
+                DeviceName      = $ev.deviceName
+                UPN             = $ev.upn
+                ElevationType   = $ev.elevationType
+                Result          = switch ($rawResult) {
+                                      'succeeded'          { 'Succeeded' }
+                                      'failed'             { 'Failed' }
+                                      'timeout'            { 'Timeout' }
+                                      'notAllowed'         { 'Not Allowed' }
+                                      'unknown'            { 'Unknown' }
+                                      'unknownFutureValue' { 'Unknown' }
+                                      '0'                  { 'Unknown' }
+                                      '1'                  { 'Succeeded' }
+                                      '2'                  { 'Failed' }
+                                      '3'                  { 'Timeout' }
+                                      '4'                  { 'Not Allowed' }
+                                      default              { $rawResult }
+                                  }
+                FilePath        = $ev.filePath
+                FileDescription = $ev.fileDescription
+                ProductName     = $ev.productName
+                Publisher       = $ev.companyName
+                FileVersion     = $ev.fileVersion
+                ProcessType     = $ev.processType
+                PolicyName      = $ev.policyName
+                Justification   = $ev.justification
+                UserType        = $ev.userType
+                ParentProcess   = $ev.parentProcessName
+                RuleId          = $ev.ruleId
+                PolicyId        = $ev.policyId
+                DeviceId        = $ev.deviceId
+            }
+        }
+
+        & $script:WriteLog "Loaded $($results.Count) elevation event(s) — opening report window." "OK"
+
+        # Serialize for the new STA runspace
+        $json  = $results | ConvertTo-Json -Depth 5
+        $count = $results.Count
+
+        $gridScript = {
+            param([string]$Json, [int]$Count)
+            Add-Type -AssemblyName PresentationFramework
+            Add-Type -AssemblyName PresentationCore
+            Add-Type -AssemblyName WindowsBase
+            Add-Type -AssemblyName System.Windows.Forms
+
+            $rawData = $Json | ConvertFrom-Json
+
+            # Build DataTable (all string columns so RowFilter LIKE works)
+            $dt    = New-Object System.Data.DataTable
+            $items = @($rawData)
+            if ($items.Count -gt 0) {
+                $props = $items[0] | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+                foreach ($p in $props) { [void]$dt.Columns.Add($p) }
+                foreach ($item in $items) {
+                    $row = $dt.NewRow()
+                    foreach ($p in $props) {
+                        $v = $item.$p
+                        $row[$p] = if ($null -eq $v) { '' } else { $v.ToString() }
+                    }
+                    $dt.Rows.Add($row)
+                }
+            }
+
+            [xml]$xaml = @'
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="700" Width="1300" MinHeight="400" MinWidth="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#17181C" Foreground="#E8E6E1" FontFamily="Segoe UI">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar: filter + export -->
+        <Border Grid.Row="0" Background="#1F2023" Padding="12,8"
+                BorderBrush="#35363B" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtFilter"
+                         Background="#26272B" Foreground="#E8E6E1"
+                         CaretBrush="#C97B3D" BorderBrush="#35363B" BorderThickness="1"
+                         Padding="8,7" FontSize="12" VerticalAlignment="Center"
+                         ToolTip="Type to filter across all columns…"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Button x:Name="btnExport"
+                            Content="Export CSV"
+                            Background="#C97B3D" Foreground="White" BorderThickness="0"
+                            Padding="14,8" Margin="0,0,8,0" FontSize="11"
+                            FontWeight="SemiBold" Cursor="Hand"/>
+                    <Button x:Name="btnClose"
+                            Content="Close"
+                            Background="#35363B" Foreground="White" BorderThickness="0"
+                            Padding="14,8" FontSize="11"
+                            FontWeight="SemiBold" Cursor="Hand"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Results grid -->
+        <DataGrid x:Name="dg" Grid.Row="1"
+                  Background="#1F2023" Foreground="#E8E6E1"
+                  BorderBrush="#35363B" BorderThickness="0"
+                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#35363B"
+                  RowBackground="#1F2023" AlternatingRowBackground="#232428"
+                  FontSize="12" AutoGenerateColumns="True" IsReadOnly="True"
+                  SelectionMode="Single" HeadersVisibility="Column"
+                  CanUserResizeRows="False" HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background"       Value="#26272B"/>
+                    <Setter Property="Foreground"       Value="#A3A29E"/>
+                    <Setter Property="Padding"          Value="10,6"/>
+                    <Setter Property="FontSize"         Value="11"/>
+                    <Setter Property="FontWeight"       Value="SemiBold"/>
+                    <Setter Property="BorderBrush"      Value="#35363B"/>
+                    <Setter Property="BorderThickness"  Value="0,0,0,1"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Padding"         Value="10,5"/>
+                    <Setter Property="Foreground"      Value="#E8E6E1"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#35363B"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
+        </DataGrid>
+
+        <!-- Status bar -->
+        <Border Grid.Row="2" Background="#1F2023" Padding="12,6"
+                BorderBrush="#35363B" BorderThickness="0,1,0,0">
+            <TextBlock x:Name="lblStatus" FontSize="11" FontFamily="Consolas"
+                       Foreground="#6B6A66"/>
+        </Border>
+    </Grid>
+</Window>
+'@
+            $reader = [System.Xml.XmlNodeReader]::new($xaml)
+            $w      = [System.Windows.Markup.XamlReader]::Load($reader)
+            $w.Title = "EPM Elevation Events — $Count record(s)"
+
+            $dg  = $w.FindName('dg')
+            $lbl = $w.FindName('lblStatus')
+            $txt = $w.FindName('txtFilter')
+
+            $dg.ItemsSource = $dt.DefaultView
+            $lbl.Text       = "$Count record(s)"
+
+            # Live filter across all string columns
+            $txt.Add_TextChanged({
+                $f = $txt.Text.Trim().Replace("'", "''")
+                if ($f) {
+                    $conds = ($dt.Columns | ForEach-Object { "[$($_.ColumnName)] LIKE '%$f%'" }) -join ' OR '
+                    try   { $dt.DefaultView.RowFilter = $conds }
+                    catch { $dt.DefaultView.RowFilter = '' }
+                } else {
+                    $dt.DefaultView.RowFilter = ''
+                }
+                $lbl.Text = "$($dt.DefaultView.Count) of $($dt.Rows.Count) record(s)"
+            }.GetNewClosure())
+
+            $w.FindName('btnExport').Add_Click({
+                $sfd          = [System.Windows.Forms.SaveFileDialog]::new()
+                $sfd.Filter   = 'CSV Files (*.csv)|*.csv'
+                $sfd.FileName = "EPM-Elevations-$(Get-Date -Format 'yyyyMMdd-HHmmss').csv"
+                if ($sfd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+                    $rawData | Export-Csv -Path $sfd.FileName -NoTypeInformation -Encoding UTF8
+                }
+            }.GetNewClosure())
+
+            $w.FindName('btnClose').Add_Click({ $w.Close() })
+
+            [void]$w.ShowDialog()
+        }
+
+        $rs = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+        $rs.ApartmentState = 'STA'
+        $rs.ThreadOptions  = 'ReuseThread'
+        $rs.Open()
+        $ps2 = [System.Management.Automation.PowerShell]::Create()
+        $ps2.Runspace = $rs
+        [void]$ps2.AddScript($gridScript).AddParameters(@{ Json = $json; Count = $count })
+        [void]$ps2.BeginInvoke()
+
+    } catch {
+        & $script:WriteLog "Error fetching elevation events: $($_.Exception.Message)" "ERR"
+    }
+    $window.Cursor = [System.Windows.Input.Cursors]::Arrow
 })
 
 # -------------------------------------------------------------

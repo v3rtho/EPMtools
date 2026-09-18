@@ -1203,6 +1203,7 @@ $window.FindName('btnRunFileAttributes').Add_Click({
 
         # Separate verbose records from data objects and emit verbose messages to the ConsoleLog
         $data = @()
+        $publisherCerts = @()
         $pendingPublisherCert = $null
         foreach ($obj in $allOutput) {
             if ($obj -is [System.Management.Automation.VerboseRecord]) {
@@ -1211,6 +1212,7 @@ $window.FindName('btnRunFileAttributes').Add_Click({
                     $pendingPublisherCert = if ($msg -match 'Name:\s*\[(?<n>[^\]]+)\]') { $Matches['n'] } else { 'Unknown' }
                     & $script:WriteLog "PUBLISHER CERTIFICATE FOUND: $pendingPublisherCert" "CERT"
                 } elseif ($pendingPublisherCert -and $msg -match 'Certificate exported to:\s*(?<path>.+)$') {
+                    $publisherCerts += [PSCustomObject]@{ Name = $pendingPublisherCert; Path = $Matches['path'] }
                     & $script:WriteLog "PUBLISHER CERTIFICATE EXPORTED: $pendingPublisherCert -> $($Matches['path'])" "CERT"
                     $pendingPublisherCert = $null
                 } else {
@@ -1221,7 +1223,7 @@ $window.FindName('btnRunFileAttributes').Add_Click({
             }
         }
 
-        if ($data.Count -eq 0) {
+        if ($data.Count -eq 0 -and $publisherCerts.Count -eq 0) {
             if ($allOutput -and ($allOutput | Where-Object { $_ -is [System.Management.Automation.VerboseRecord] })) {
                 & $script:WriteLog "No data objects returned; verbose messages displayed above." "WARN"
             } else {
@@ -1250,6 +1252,23 @@ $window.FindName('btnRunFileAttributes').Add_Click({
                         $row['Property'] = $prop.Name
                         $row['Value']    = if ($null -eq $prop.Value) { '' } else { $prop.Value.ToString() }
                         $dt.Rows.Add($row)
+                    }
+                }
+
+                if ($publisherCerts.Count -gt 0) {
+                    $sepRow = $dt.NewRow()
+                    $sepRow['Property'] = "-- Publisher Certificate(s) --"
+                    $sepRow['Value']    = ''
+                    $dt.Rows.Add($sepRow)
+                    foreach ($cert in $publisherCerts) {
+                        $nameRow = $dt.NewRow()
+                        $nameRow['Property'] = 'Publisher Certificate Name'
+                        $nameRow['Value']    = $cert.Name
+                        $dt.Rows.Add($nameRow)
+                        $pathRow = $dt.NewRow()
+                        $pathRow['Property'] = 'Publisher Certificate Path'
+                        $pathRow['Value']    = $cert.Path
+                        $dt.Rows.Add($pathRow)
                     }
                 }
 

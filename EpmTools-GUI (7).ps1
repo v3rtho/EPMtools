@@ -294,10 +294,6 @@ Add-Type -AssemblyName System.Windows.Forms
 
                     <RadioButton x:Name="navPolicies" Style="{StaticResource NavButton}">Get-Policies</RadioButton>
 
-                    <RadioButton x:Name="navDeclaredConfig" Style="{StaticResource NavButton}">Get-DeclaredConfiguration</RadioButton>
-
-                    <RadioButton x:Name="navDeclaredAnalysis" Style="{StaticResource NavButton}">Get-DeclaredConfigurationAnalysis</RadioButton>
-
                     <RadioButton x:Name="navElevationRules" Style="{StaticResource NavButton}">Get-ElevationRules</RadioButton>
 
                     <RadioButton x:Name="navClientSettings" Style="{StaticResource NavButton}">Get-ClientSettings</RadioButton>
@@ -471,60 +467,6 @@ Add-Type -AssemblyName System.Windows.Forms
                         </StackPanel>
                     </Border>
 
-                    <!-- ── PAGE: Get-DeclaredConfiguration ── -->
-                    <Border x:Name="panelDeclaredConfig" Visibility="Collapsed"
-                            Background="#26272B" CornerRadius="10" Padding="20">
-                        <StackPanel>
-                            <TextBlock Text="Retrieves all WinDC documents identifying policies targeted to this device."
-                                       FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap"
-                                       Margin="0,0,0,12"/>
-
-                            <TextBlock Text="Policy Type:" FontSize="11" Foreground="#6B6A66" Margin="0,0,0,6"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                <RadioButton x:Name="rbDeclaredElevationRules"
-                                             Content="ElevationRules" IsChecked="True"
-                                             Foreground="#E8E6E1" FontSize="12"
-                                             GroupName="DeclaredPolicyType" Margin="0,0,12,0"/>
-                                <RadioButton x:Name="rbDeclaredClientSettings"
-                                             Content="ClientSettings"
-                                             Foreground="#E8E6E1" FontSize="12"
-                                             GroupName="DeclaredPolicyType"/>
-                            </StackPanel>
-
-                            <Button x:Name="btnRunDeclaredConfig"
-                                    Style="{StaticResource ActionButton}"
-                                    Content="▶  Run Get-DeclaredConfiguration"
-                                    HorizontalAlignment="Left" Padding="16,9" Margin="0,12,0,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- ── PAGE: Get-DeclaredConfigurationAnalysis ── -->
-                    <Border x:Name="panelDeclaredAnalysis" Visibility="Collapsed"
-                            Background="#26272B" CornerRadius="10" Padding="20">
-                        <StackPanel>
-                            <TextBlock Text="Retrieves WinDC documents of type MSFTPolicies and checks if each policy is present in the EPM Agent (Processed column)."
-                                       FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap"
-                                       Margin="0,0,0,12"/>
-
-                            <TextBlock Text="Policy Type:" FontSize="11" Foreground="#6B6A66" Margin="0,0,0,6"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                <RadioButton x:Name="rbAnalysisElevationRules"
-                                             Content="ElevationRules" IsChecked="True"
-                                             Foreground="#E8E6E1" FontSize="12"
-                                             GroupName="AnalysisPolicyType" Margin="0,0,12,0"/>
-                                <RadioButton x:Name="rbAnalysisClientSettings"
-                                             Content="ClientSettings"
-                                             Foreground="#E8E6E1" FontSize="12"
-                                             GroupName="AnalysisPolicyType"/>
-                            </StackPanel>
-
-                            <Button x:Name="btnRunDeclaredAnalysis"
-                                    Style="{StaticResource ActionButton}"
-                                    Content="▶  Run Get-DeclaredConfigurationAnalysis"
-                                    HorizontalAlignment="Left" Padding="16,9"/>
-                        </StackPanel>
-                    </Border>
-
                     <!-- ── PAGE: Get-ElevationRules ── -->
                     <Border x:Name="panelElevationRules" Visibility="Collapsed"
                             Background="#26272B" CornerRadius="10" Padding="20">
@@ -542,12 +484,12 @@ Add-Type -AssemblyName System.Windows.Forms
                                              GroupName="LookupType"/>
                             </StackPanel>
 
-                            <TextBlock Text="Target value (file name or certificate payload):"
+                            <TextBlock Text="Target value (file name, full path, or certificate payload):"
                                        FontSize="12" Foreground="#A3A29E" Margin="0,0,0,6"/>
                             <TextBox x:Name="txtElevationTarget"
                                      Style="{StaticResource InputBox}"
                                      Height="36" Margin="0,0,0,16"
-                                     ToolTip="e.g. notepad.exe"/>
+                                     ToolTip="e.g. notepad.exe or C:\Windows\System32\notepad.exe (file name is extracted automatically)"/>
 
                             <Button x:Name="btnRunElevationRules"
                                     Style="{StaticResource ActionButton}"
@@ -716,12 +658,32 @@ Add-Type -AssemblyName System.Windows.Forms
                             <Setter Property="Padding"     Value="12,6"/>
                             <Setter Property="FontSize"    Value="11"/>
                             <Setter Property="BorderThickness" Value="0"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#26272B"/>
-                                    <Setter Property="Foreground" Value="#E8E6E1"/>
-                                </Trigger>
-                            </Style.Triggers>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Border x:Name="TabBorder"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter x:Name="ContentSite"
+                                                              ContentSource="Header"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"
+                                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="TabBorder" Property="Background" Value="#2A2B30"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="TabBorder" Property="Background" Value="#26272B"/>
+                                                <Setter Property="Foreground" Value="#E8E6E1"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </TabControl.Resources>
 
@@ -730,7 +692,7 @@ Add-Type -AssemblyName System.Windows.Forms
                                  Background="#121214"
                                  Foreground="#5FA88A"
                                  FontFamily="Consolas"
-                                 FontSize="11"
+                                 FontSize="14"
                                  IsReadOnly="True"
                                  TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto"
@@ -744,7 +706,7 @@ Add-Type -AssemblyName System.Windows.Forms
                                  Background="#131315"
                                  Foreground="#E8E6E1"
                                  FontFamily="Consolas"
-                                 FontSize="12"
+                                 FontSize="14"
                                  IsReadOnly="True"
                                  TextWrapping="Wrap"
                                  AcceptsReturn="True"
@@ -830,8 +792,7 @@ $script:SetModuleStatus = {
 $script:ShowPanel = {
     param([string]$Name)
     $panels = @(
-        'panelHome','panelPolicies','panelDeclaredConfig',
-        'panelDeclaredAnalysis','panelElevationRules',
+        'panelHome','panelPolicies','panelElevationRules',
         'panelClientSettings','panelFileAttributes','panelReports'
     )
     foreach ($p in $panels) {
@@ -890,8 +851,6 @@ $timer.Start()
 $navMap = @{
     'navHome'             = @{ Panel = 'panelHome';             Title = 'Dashboard';                         Sub = 'EPM module overview and quick actions' }
     'navPolicies'         = @{ Panel = 'panelPolicies';         Title = 'Get-Policies';                      Sub = 'Retrieve policies by type from the EPM Agent' }
-    'navDeclaredConfig'   = @{ Panel = 'panelDeclaredConfig';   Title = 'Get-DeclaredConfiguration';         Sub = 'List WinDC documents targeted to this device' }
-    'navDeclaredAnalysis' = @{ Panel = 'panelDeclaredAnalysis'; Title = 'Get-DeclaredConfigurationAnalysis'; Sub = 'Check which MSFTPolicies are processed by the EPM Agent' }
     'navElevationRules'   = @{ Panel = 'panelElevationRules';   Title = 'Get-ElevationRules';                Sub = 'Query elevation rules by FileName or CertificatePayload' }
     'navClientSettings'   = @{ Panel = 'panelClientSettings';   Title = 'Get-ClientSettings';                Sub = 'Display effective client settings used by EPM' }
     'navFileAttributes'   = @{ Panel = 'panelFileAttributes';   Title = 'Get-FileAttributes';                Sub = 'Extract publisher and CA certs from an .exe for rule building' }
@@ -993,92 +952,6 @@ $window.FindName('btnRunGetPolicies').Add_Click({
 })
 
 # -------------------------------------------------------------
-# Get-DeclaredConfiguration
-# -------------------------------------------------------------
-$window.FindName('btnRunDeclaredConfig').Add_Click({
-    if (-not $script:ModuleLoaded) { & $script:WriteLog "Module not loaded." "WARN"; return }
-    $policyType = if ($window.FindName('rbDeclaredElevationRules').IsChecked) { 'ElevationRules' } else { 'ClientSettings' }
-    & $script:WriteLog "Running: Get-DeclaredConfiguration -PolicyType $policyType -Verbose"
-    try {
-        # Ensure verbose messages are produced
-        $SavedVerbosePreference = $VerbosePreference
-        $VerbosePreference = 'Continue'
-
-        $allOutput = Get-DeclaredConfiguration -PolicyType $policyType -ErrorAction Stop -Verbose 4>&1
-
-        # Separate verbose records from data objects
-        $data = @()
-        foreach ($obj in $allOutput) {
-            if ($obj -is [System.Management.Automation.VerboseRecord]) {
-                & $script:WriteLog "VERBOSE: $($obj.Message)" "INFO"
-            } else {
-                $data += $obj
-            }
-        }
-
-        $VerbosePreference = $SavedVerbosePreference
-
-        if ($data.Count -gt 0) {
-            & $script:PopulateGrid $data
-            try {
-                $json = $data | ConvertTo-Json -Depth 10
-                $raw  = $json | Out-String -Width 4096
-            } catch {
-                $raw = $data | Out-String
-            }
-            $window.FindName('RawOutput').Text = $raw.TrimEnd()
-        } else {
-            & $script:WriteLog "No data returned." "WARN"
-            $window.FindName('RawOutput').Text = ""
-        }
-    } catch {
-        & $script:WriteLog "Error: $($_.Exception.Message)" "ERR"
-    }
-})
-
-# -------------------------------------------------------------
-# Get-DeclaredConfigurationAnalysis
-# -------------------------------------------------------------
-$window.FindName('btnRunDeclaredAnalysis').Add_Click({
-    if (-not $script:ModuleLoaded) { & $script:WriteLog "Module not loaded." "WARN"; return }
-    $policyType = if ($window.FindName('rbAnalysisElevationRules').IsChecked) { 'ElevationRules' } else { 'ClientSettings' }
-    & $script:WriteLog "Running: Get-DeclaredConfigurationAnalysis -PolicyType $policyType -Verbose"
-    try {
-        $SavedVerbosePreference = $VerbosePreference
-        $VerbosePreference = 'Continue'
-
-        $allOutput = Get-DeclaredConfigurationAnalysis -PolicyType $policyType -ErrorAction Stop -Verbose 4>&1
-
-        $data = @()
-        foreach ($obj in $allOutput) {
-            if ($obj -is [System.Management.Automation.VerboseRecord]) {
-                & $script:WriteLog "VERBOSE: $($obj.Message)" "INFO"
-            } else {
-                $data += $obj
-            }
-        }
-
-        $VerbosePreference = $SavedVerbosePreference
-
-        if ($data.Count -gt 0) {
-            & $script:PopulateGrid $data
-            try {
-                $json = $data | ConvertTo-Json -Depth 10
-                $raw  = $json | Out-String -Width 4096
-            } catch {
-                $raw = $data | Out-String
-            }
-            $window.FindName('RawOutput').Text = $raw.TrimEnd()
-        } else {
-            & $script:WriteLog "No data returned." "WARN"
-            $window.FindName('RawOutput').Text = ""
-        }
-    } catch {
-        & $script:WriteLog "Error: $($_.Exception.Message)" "ERR"
-    }
-})
-
-# -------------------------------------------------------------
 # Get-ElevationRules
 # -------------------------------------------------------------
 $window.FindName('btnRunElevationRules').Add_Click({
@@ -1088,6 +961,9 @@ $window.FindName('btnRunElevationRules').Add_Click({
     if ([string]::IsNullOrEmpty($target)) {
         & $script:WriteLog "Please enter a target value." "WARN"
         return
+    }
+    if ($lookup -eq 'FileName') {
+        $target = Split-Path -Path $target -Leaf
     }
     & $script:WriteLog "Running: Get-ElevationRules -Lookup $lookup -Target '$target' -Verbose"
     try {

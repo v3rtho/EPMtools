@@ -1203,12 +1203,16 @@ $window.FindName('btnRunFileAttributes').Add_Click({
 
         # Separate verbose records from data objects and emit verbose messages to the ConsoleLog
         $data = @()
+        $pendingPublisherCert = $null
         foreach ($obj in $allOutput) {
             if ($obj -is [System.Management.Automation.VerboseRecord]) {
                 $msg = $obj.Message
                 if ($msg -match 'Publisher Cert\?\s*\[True\]') {
-                    $certName = if ($msg -match 'Name:\s*\[(?<n>[^\]]+)\]') { $Matches['n'] } else { 'Unknown' }
-                    & $script:WriteLog "PUBLISHER CERTIFICATE FOUND: $certName" "CERT"
+                    $pendingPublisherCert = if ($msg -match 'Name:\s*\[(?<n>[^\]]+)\]') { $Matches['n'] } else { 'Unknown' }
+                    & $script:WriteLog "PUBLISHER CERTIFICATE FOUND: $pendingPublisherCert" "CERT"
+                } elseif ($pendingPublisherCert -and $msg -match 'Certificate exported to:\s*(?<path>.+)$') {
+                    & $script:WriteLog "PUBLISHER CERTIFICATE EXPORTED: $pendingPublisherCert -> $($Matches['path'])" "CERT"
+                    $pendingPublisherCert = $null
                 } else {
                     & $script:WriteLog "VERBOSE: $msg" "INFO"
                 }

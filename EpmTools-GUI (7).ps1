@@ -688,13 +688,12 @@ Add-Type -AssemblyName System.Windows.Forms
                     </TabControl.Resources>
 
                     <TabItem Header="📝  Console Log" IsSelected="True">
-                        <TextBox x:Name="ConsoleLog"
+                        <RichTextBox x:Name="ConsoleLog"
                                  Background="#121214"
                                  Foreground="#5FA88A"
                                  FontFamily="Consolas"
                                  FontSize="14"
                                  IsReadOnly="True"
-                                 TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto"
                                  HorizontalScrollBarVisibility="Auto"
                                  BorderThickness="0"
@@ -755,6 +754,28 @@ $script:AuthTimer     = $null
 # inside WPF event-handler scriptblocks in Windows PowerShell.
 # -------------------------------------------------------------
 
+$script:AppendConsoleText = {
+    param([string]$Text, [string]$Color = '#5FA88A', [bool]$Bold = $false, [string]$BgColor = $null)
+    $ctrl = $window.FindName('ConsoleLog')
+    if (-not $ctrl) { return }
+    $ctrl.Dispatcher.Invoke([Action]{
+        $bc   = [System.Windows.Media.BrushConverter]::new()
+        $para = New-Object System.Windows.Documents.Paragraph
+        $para.Margin = New-Object System.Windows.Thickness(0,0,0,1)
+        $lines = $Text -split "`n"
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $run = New-Object System.Windows.Documents.Run($lines[$i])
+            $run.Foreground = $bc.ConvertFromString($Color)
+            if ($Bold)    { $run.FontWeight = [System.Windows.FontWeights]::Bold }
+            if ($BgColor) { $run.Background = $bc.ConvertFromString($BgColor) }
+            $para.Inlines.Add($run)
+            if ($i -lt $lines.Count - 1) { $para.Inlines.Add((New-Object System.Windows.Documents.LineBreak)) }
+        }
+        $ctrl.Document.Blocks.Add($para)
+        $ctrl.ScrollToEnd()
+    })
+}
+
 $script:WriteLog = {
     param([string]$Message, [string]$Level = "INFO")
     $ts = Get-Date -Format "HH:mm:ss"
@@ -762,16 +783,19 @@ $script:WriteLog = {
         "OK"    { "[OK]  " }
         "ERR"   { "[ERR] " }
         "WARN"  { "[WARN]" }
+        "CERT"  { "[CERT]" }
         default { "[INFO]" }
     }
-    $line = "[$ts] $prefix $Message`n"
-    $ctrl = $window.FindName('ConsoleLog')
-    if ($ctrl) {
-        $ctrl.Dispatcher.Invoke([Action]{
-            $ctrl.AppendText($line)
-            $ctrl.ScrollToEnd()
-        })
+    $color = switch ($Level) {
+        "OK"    { "#5FA88A" }
+        "ERR"   { "#C1554A" }
+        "WARN"  { "#D9A441" }
+        "CERT"  { "#FFD65C" }
+        default { "#5FA88A" }
     }
+    $bgColor = if ($Level -eq 'CERT') { "#4A3B12" } else { $null }
+    $line = "[$ts] $prefix $Message"
+    & $script:AppendConsoleText $line $color ($Level -eq 'CERT') $bgColor
 }
 
 $script:SetModuleStatus = {
@@ -902,7 +926,7 @@ $window.FindName('btnLoadModule').Add_Click({
 # Clear Output
 # -------------------------------------------------------------
 $window.FindName('btnClearOutput').Add_Click({
-    $window.FindName('ConsoleLog').Clear()
+    $window.FindName('ConsoleLog').Document.Blocks.Clear()
     $window.FindName('ResultGrid').ItemsSource  = $null
     $window.FindName('btnExportCsv').IsEnabled  = $false
     $window.FindName('btnExportJson').IsEnabled = $false
@@ -1095,11 +1119,7 @@ $window.FindName('btnRunClientSettings').Add_Click({
         $window.FindName('RawOutput').Text = $pretty
 
         & $script:WriteLog "--- Get-ClientSettings output ---" "OK"
-        $ctrl = $window.FindName('ConsoleLog')
-        $ctrl.Dispatcher.Invoke([Action]{
-            $ctrl.AppendText($pretty + "`n")
-            $ctrl.ScrollToEnd()
-        })
+        & $script:AppendConsoleText $pretty '#E8E6E1'
         & $script:WriteLog "--- end of output ---" "OK"
     } catch {
         & $script:WriteLog "Error: $($_.Exception.Message)" "ERR"
@@ -1185,7 +1205,13 @@ $window.FindName('btnRunFileAttributes').Add_Click({
         $data = @()
         foreach ($obj in $allOutput) {
             if ($obj -is [System.Management.Automation.VerboseRecord]) {
-                & $script:WriteLog "VERBOSE: $($obj.Message)" "INFO"
+                $msg = $obj.Message
+                if ($msg -match 'Publisher Cert\?\s*\[True\]') {
+                    $certName = if ($msg -match 'Name:\s*\[(?<n>[^\]]+)\]') { $Matches['n'] } else { 'Unknown' }
+                    & $script:WriteLog "PUBLISHER CERTIFICATE FOUND: $certName" "CERT"
+                } else {
+                    & $script:WriteLog "VERBOSE: $msg" "INFO"
+                }
             } else {
                 $data += $obj
             }

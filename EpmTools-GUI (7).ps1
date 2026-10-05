@@ -13,6 +13,7 @@
 # ARM64 / x64 Self-Relaunch Guard
 # EpmCmdlets.dll is x64-only. Detect and relaunch if needed.
 # -------------------------------------------------------------
+
 $x64Host    = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
 $is64bit    = [System.Environment]::Is64BitProcess
 $isWinPS    = ($PSVersionTable.PSEdition -eq 'Desktop')

@@ -1,4 +1,4 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     WPF GUI Wrapper for the EpmTools PowerShell Module
@@ -3458,7 +3458,7 @@ $script:RulePush = {
                 description       = "$($p.description)"
                 platforms         = $p.platforms
                 technologies      = $p.technologies
-                roleScopeTagIds   = if ($p.roleScopeTagIds) { @($p.roleScopeTagIds) } else { @('0') }
+                roleScopeTagIds   = @(if ($p.roleScopeTagIds) { $p.roleScopeTagIds } else { '0' })   # @() outside: an if-expression unrolls 1-item arrays
                 templateReference = [ordered]@{ templateId = $tplId }
                 settings          = $outSettings.ToArray()
             }

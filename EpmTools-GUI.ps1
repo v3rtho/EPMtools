@@ -1,9 +1,13 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     WPF GUI Wrapper for the EpmTools PowerShell Module
     (Microsoft Endpoint Privilege Management)
 .NOTES
+    Build by Thomas Verheyden
+    Copyright (c) 2026 Thomas Verheyden. All rights reserved.
+    https://github.com/v3rtho/EPMtools
+
     Requires EPM policy deployed via Microsoft Intune.
     Module: C:\Program Files\Microsoft EPM Agent\EpmTools\EpmCmdlets.dll
     ARM64 devices: automatically relaunched under Windows PowerShell x64.
@@ -351,6 +355,22 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                     </StackPanel>
                 </Border>
 
+                <!-- Graph Status -->
+                <Border DockPanel.Dock="Top" Margin="12,0,12,16"
+                        Background="#26272B" CornerRadius="8" Padding="12,10">
+                    <StackPanel>
+                        <TextBlock Text="MICROSOFT GRAPH" FontSize="9" FontWeight="Bold"
+                                   Foreground="#6B6A66" Margin="0,0,0,6"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse x:Name="sideGraphDot" Width="8" Height="8"
+                                     Fill="#C1554A" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="sideGraphText" Text="Not connected"
+                                       FontSize="12" Foreground="#A3A29E" VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" MaxWidth="160"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Navigation -->
                 <StackPanel DockPanel.Dock="Top" Margin="8,0">
                     <TextBlock Text="CMDLETS" FontSize="9" FontWeight="Bold"
@@ -375,8 +395,10 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                     <Separator Background="#35363B" Margin="4,10"/>
                     <TextBlock Text="INTUNE" FontSize="9" FontWeight="Bold"
                                Foreground="#C97B3D" Margin="12,0,0,8"/>
+                    <RadioButton x:Name="navGraphAuth" Style="{StaticResource NavButton}">Authentication</RadioButton>
                     <RadioButton x:Name="navCreateRule" Style="{StaticResource NavButton}">Create Rule</RadioButton>
                     <RadioButton x:Name="navRulePolicies" Style="{StaticResource NavButton}">Rule Policies</RadioButton>
+                    <RadioButton x:Name="navEpmSettings" Style="{StaticResource NavButton}">Client Settings</RadioButton>
                 </StackPanel>
 
                 <!-- Load module button at bottom -->
@@ -388,6 +410,10 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                     <Button x:Name="btnClearOutput" Style="{StaticResource SecondaryButton}"
                             Content="🗑  Clear Output" Padding="12,9"
                             FontSize="12" Margin="0,6,0,0"/>
+                    <TextBlock Text="Build by Thomas Verheyden" FontSize="11" Foreground="#A3A29E"
+                               HorizontalAlignment="Center" Margin="0,14,0,0"/>
+                    <TextBlock Text="© 2026 Thomas Verheyden" FontSize="10" Foreground="#8C8B86"
+                               HorizontalAlignment="Center" Margin="0,2,0,0"/>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -640,95 +666,102 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                         <StackPanel>
 
                             <!-- Header -->
-                            <TextBlock Text="EPM Elevation Events"
+                            <TextBlock Text="EPM Reports"
                                        FontSize="14" FontWeight="SemiBold"
                                        Foreground="#E8E6E1" Margin="0,0,0,4"/>
-                            <TextBlock Text="Retrieve elevation events from Intune Endpoint Privilege Management via Microsoft Graph API."
+                            <TextBlock Text="Endpoint Privilege Management reports from the Intune reporting service (Microsoft Graph export jobs)."
                                        FontSize="12" Foreground="#A3A29E"
                                        TextWrapping="Wrap" Margin="0,0,0,24"/>
 
-                            <!-- Authentication -->
-                            <TextBlock Text="AUTHENTICATION" FontSize="9" FontWeight="Bold"
-                                       Foreground="#6B6A66" Margin="0,0,0,8"/>
-                            <TextBlock Text="Sign in with your browser. No extra modules required — uses OAuth2 with PKCE. Requires DeviceManagementManagedDevices.Read.All permission."
-                                       FontSize="11" Foreground="#A3A29E"
-                                       TextWrapping="Wrap" Margin="0,0,0,10"/>
-                            <Grid Margin="0,0,0,10">
+                            <!-- Uses the shared Graph connection -->
+                            <Grid Margin="0,0,0,24">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="txtTenantId" Style="{StaticResource InputBox}"
-                                         Grid.Column="0" Height="36"
-                                         ToolTip="Tenant ID or domain (e.g. contoso.onmicrosoft.com) — leave blank to use default"/>
-                                <Button x:Name="btnConnectGraph" Style="{StaticResource ActionButton}"
-                                        Grid.Column="1" Content="Connect to Graph"
-                                        Padding="14,9" Margin="8,0,0,0"/>
+                                <TextBlock Text="Uses the Microsoft Graph connection from INTUNE → Authentication."
+                                           FontSize="11" Foreground="#A3A29E" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                <Button x:Name="btnReportsAuth" Grid.Column="1" Style="{StaticResource SecondaryButton}"
+                                        Content="Authentication…" Padding="12,7" Margin="8,0,0,0"/>
                             </Grid>
-                            <TextBlock x:Name="lblGraphStatus" Text="Not connected."
-                                       FontSize="12" Foreground="#6B6A66" Margin="0,0,0,24"/>
 
-                            <!-- Elevation Events report -->
-                            <TextBlock Text="ELEVATION EVENTS REPORT" FontSize="9" FontWeight="Bold"
+                            <!-- EPM reports (Intune reporting export jobs) -->
+                            <TextBlock Text="REPORT" FontSize="9" FontWeight="Bold"
                                        Foreground="#6B6A66" Margin="0,0,0,8"/>
+                            <WrapPanel>
+                                <RadioButton x:Name="rbRepEvents" GroupName="RepKind" Style="{StaticResource PillRadio}" Content="Elevation events" IsChecked="True"/>
+                                <RadioButton x:Name="rbRepByApp" GroupName="RepKind" Style="{StaticResource PillRadio}" Content="By application"/>
+                                <RadioButton x:Name="rbRepByPub" GroupName="RepKind" Style="{StaticResource PillRadio}" Content="By publisher"/>
+                                <RadioButton x:Name="rbRepByUser" GroupName="RepKind" Style="{StaticResource PillRadio}" Content="By user"/>
+                                <RadioButton x:Name="rbRepDenied" GroupName="RepKind" Style="{StaticResource PillRadio}" Content="Denied"/>
+                                <RadioButton x:Name="rbRepFrequent" GroupName="RepKind" Style="{StaticResource PillRadio}" Content="Most frequent"/>
+                                <RadioButton x:Name="rbRepTrend" GroupName="RepKind" Style="{StaticResource PillRadio}" Content="Elevation trend"/>
+                            </WrapPanel>
+                            <StackPanel x:Name="panelRepRange" Margin="0,4,0,0">
+                                <TextBlock Text="Period" Style="{StaticResource FieldLabel}"/>
+                                <WrapPanel>
+                                    <RadioButton x:Name="rbRange7" GroupName="RepRange" Style="{StaticResource PillRadio}" Content="Last 7 days"/>
+                                    <RadioButton x:Name="rbRange30" GroupName="RepRange" Style="{StaticResource PillRadio}" Content="Last 30 days" IsChecked="True"/>
+                                    <RadioButton x:Name="rbRange90" GroupName="RepRange" Style="{StaticResource PillRadio}" Content="Last 90 days"/>
+                                    <RadioButton x:Name="rbRangeAll" GroupName="RepRange" Style="{StaticResource PillRadio}" Content="Everything Intune keeps"/>
+                                </WrapPanel>
+                            </StackPanel>
+                            <TextBlock x:Name="lblRepInfo" FontSize="11" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,8,0,4"/>
                             <TextBlock FontSize="11" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,0,0,4">
                                 <Run>Endpoint: </Run>
-                                <Run FontFamily="Consolas" Foreground="#E0A868">GET /beta/deviceManagement/privilegeManagementElevations</Run>
+                                <Run FontFamily="Consolas" Foreground="#E0A868">POST /beta/deviceManagement/reports/exportJobs</Run>
+                                <Run> (export job, then download)</Run>
                             </TextBlock>
-                            <TextBlock Text="All pages are fetched automatically. Results populate the grid and raw output pane below."
-                                       FontSize="11" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,0,0,16"/>
+                            <TextBlock FontSize="11" Foreground="#8C8B86" TextWrapping="Wrap" Margin="0,0,0,16"
+                                       Text="User accounts need an Intune role with Endpoint Privilege Management Policy Authoring › View Reports (EpmPolicy.ViewReports); without it Intune returns 403."/>
                             <Button x:Name="btnLoadElevationReport" Style="{StaticResource ActionButton}"
-                                    Content="▶  Load Elevation Events"
+                                    Content="▶  Run report"
                                     HorizontalAlignment="Left" Padding="16,9"
                                     IsEnabled="False"/>
 
                         </StackPanel>
                     </Border>
 
-                    <!-- ── PAGE: Create Rule (Intune) ── -->
-                    <StackPanel x:Name="panelCreateRule" Visibility="Collapsed">
-
-                        <!-- Graph connection bar -->
-                        <Border Background="#26272B" CornerRadius="10" Padding="14,10" Margin="0,0,0,12">
+                    <!-- ── PAGE: Authentication (Microsoft Graph, shared by Reports and all INTUNE pages) ── -->
+                    <StackPanel x:Name="panelGraphAuth" Visibility="Collapsed">
+                        <Border Background="#26272B" CornerRadius="10" Padding="20" Margin="0,0,0,12">
                             <StackPanel>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Ellipse x:Name="ruleGraphDot" Width="8" Height="8" Fill="#C1554A"
-                                                 Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                        <TextBlock x:Name="lblRuleGraphStatus" Text="Microsoft Graph: not connected"
-                                                   FontSize="12" Foreground="#A3A29E" VerticalAlignment="Center"
-                                                   TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                    <WrapPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,6,0,0">
-                                        <RadioButton x:Name="rbAuthUser" GroupName="AuthMode" Style="{StaticResource PillRadio}"
-                                                     Content="User sign-in" IsChecked="True" Padding="10,5"
-                                                     ToolTip="Interactive sign-in in your browser (delegated permissions)"/>
-                                        <RadioButton x:Name="rbAuthApp" GroupName="AuthMode" Style="{StaticResource PillRadio}"
-                                                     Content="Service principal" Padding="10,5"
-                                                     ToolTip="App registration with a client secret (application permissions)"/>
-                                    </WrapPanel>
-                                    <Button x:Name="btnRuleConnectGraph" Grid.Column="2" Style="{StaticResource ActionButton}"
-                                            Content="Connect to Graph" Padding="14,8" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                                </Grid>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <Ellipse x:Name="authGraphDot" Width="10" Height="10" Fill="#C1554A" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="lblAuthStatus" Text="Not connected" FontSize="14" FontWeight="SemiBold"
+                                               Foreground="#E8E6E1" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <TextBlock x:Name="lblAuthDetails" FontSize="11" Foreground="#A3A29E" FontFamily="Consolas"
+                                           TextWrapping="Wrap" LineHeight="18"
+                                           Text="One connection for Reports, Create Rule, Rule Policies and Client Settings."/>
+                                <Button x:Name="btnGraphDisconnect" Style="{StaticResource SecondaryButton}" Content="Disconnect"
+                                        HorizontalAlignment="Left" Padding="14,7" Margin="0,12,0,0" IsEnabled="False"/>
+                            </StackPanel>
+                        </Border>
 
-                                <!-- User sign-in -->
-                                <Grid x:Name="panelAuthUser" Margin="0,10,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Tenant (optional)" Style="{StaticResource FieldLabel}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                    <TextBox x:Name="txtRuleTenantId" Grid.Column="1" Style="{StaticResource InputBox}" Height="32"
+                        <Border Background="#26272B" CornerRadius="10" Padding="20,8,20,20">
+                            <StackPanel>
+                                <TextBlock Text="SIGN IN WITH" Style="{StaticResource SectionHeader}"/>
+                                <WrapPanel>
+                                    <RadioButton x:Name="rbAuthUser" GroupName="AuthMode" Style="{StaticResource PillRadio}"
+                                                 Content="User account" IsChecked="True"
+                                                 ToolTip="Interactive sign-in in your browser (delegated permissions)"/>
+                                    <RadioButton x:Name="rbAuthApp" GroupName="AuthMode" Style="{StaticResource PillRadio}"
+                                                 Content="Service principal + secret"
+                                                 ToolTip="App registration with a client secret (application permissions)"/>
+                                </WrapPanel>
+
+                                <!-- User account -->
+                                <StackPanel x:Name="panelAuthUser" Margin="0,8,0,0">
+                                    <TextBlock Text="Tenant (optional)" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtUserTenantId" Style="{StaticResource InputBox}" Height="34"
                                              ToolTip="Tenant ID or domain (e.g. contoso.onmicrosoft.com). Leave blank for your home tenant."/>
-                                </Grid>
+                                    <TextBlock FontSize="11" Foreground="#8C8B86" TextWrapping="Wrap" Margin="0,8,0,0"
+                                               Text="Opens your browser (OAuth2 with PKCE). Delegated permissions requested: DeviceManagementManagedDevices.Read.All, DeviceManagementConfiguration.ReadWrite.All, Group.Read.All. Admin consent may be required."/>
+                                </StackPanel>
 
                                 <!-- Service principal + client secret -->
-                                <StackPanel x:Name="panelAuthApp" Visibility="Collapsed" Margin="0,10,0,0">
+                                <StackPanel x:Name="panelAuthApp" Visibility="Collapsed" Margin="0,8,0,0">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -739,18 +772,18 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
                                             <TextBlock Text="Tenant ID or domain *" Style="{StaticResource FieldLabel}"/>
-                                            <TextBox x:Name="txtAppTenantId" Style="{StaticResource InputBox}" Height="32"
+                                            <TextBox x:Name="txtAppTenantId" Style="{StaticResource InputBox}" Height="34"
                                                      ToolTip="e.g. contoso.onmicrosoft.com or the tenant GUID"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Text="Client (application) ID *" Style="{StaticResource FieldLabel}"/>
-                                            <TextBox x:Name="txtAppClientId" Style="{StaticResource InputBox}" Height="32"
+                                            <TextBox x:Name="txtAppClientId" Style="{StaticResource InputBox}" Height="34"
                                                      ToolTip="Application (client) ID of the app registration"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="4">
                                             <TextBlock Text="Client secret *" Style="{StaticResource FieldLabel}"/>
-                                            <PasswordBox x:Name="pwdAppSecret" Height="32" Background="#1C1D21" Foreground="#E8E6E1"
-                                                         BorderBrush="#35363B" BorderThickness="1" Padding="10,6"
+                                            <PasswordBox x:Name="pwdAppSecret" Height="34" Background="#1C1D21" Foreground="#E8E6E1"
+                                                         BorderBrush="#35363B" BorderThickness="1" Padding="10,7"
                                                          FontFamily="Consolas" FontSize="12" CaretBrush="#C97B3D"
                                                          ToolTip="The secret's Value (not its ID). Kept in memory only, never saved."/>
                                         </StackPanel>
@@ -758,10 +791,18 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                                     <CheckBox x:Name="chkRememberApp" Style="{StaticResource DarkCheck}" Margin="0,10,0,0"
                                               Content="Remember tenant and client ID on this PC (the secret is never saved)"/>
                                     <TextBlock FontSize="11" Foreground="#8C8B86" TextWrapping="Wrap" Margin="0,4,0,0"
-                                               Text="Application permissions with admin consent: DeviceManagementConfiguration.ReadWrite.All (rules), DeviceManagementManagedDevices.Read.All (elevation report), Group.Read.All (assign to a group)."/>
+                                               Text="Application permissions with admin consent: DeviceManagementConfiguration.ReadWrite.All (rules, client settings), DeviceManagementManagedDevices.Read.All (elevation report), Group.Read.All (assign to a group)."/>
                                 </StackPanel>
+
+                                <Button x:Name="btnGraphConnect" Style="{StaticResource ActionButton}" Content="Connect to Graph"
+                                        HorizontalAlignment="Left" Padding="18,10" FontSize="13" Margin="0,16,0,0"/>
                             </StackPanel>
                         </Border>
+                    </StackPanel>
+
+                    <!-- ── PAGE: Create Rule (Intune) ── -->
+                    <StackPanel x:Name="panelCreateRule" Visibility="Collapsed">
+
 
                         <!-- Stepper -->
                         <StackPanel Orientation="Horizontal" Margin="2,0,0,12">
@@ -1130,7 +1171,7 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                         <StackPanel>
                             <TextBlock Text="Elevation rules policies in Intune" FontSize="14" FontWeight="SemiBold"
                                        Foreground="#E8E6E1" Margin="0,0,0,4"/>
-                            <TextBlock Text="Lists your EPM elevation rules policies. Select one to show its rules in the Results Grid or export it as JSON. Connect to Graph on the Create Rule page first."
+                            <TextBlock Text="Lists your EPM elevation rules policies. Select one to show its rules in the Results Grid or export it as JSON. Sign in on INTUNE → Authentication first."
                                        FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,0,0,14"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                 <Button x:Name="btnLoadRulePolicies" Style="{StaticResource ActionButton}" Content="▶  Load policies" Padding="16,9"/>
@@ -1140,6 +1181,119 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
                             <DataGrid x:Name="gridRulePolicies" Style="{StaticResource ResultGrid}" Height="220"/>
                         </StackPanel>
                     </Border>
+
+                    <!-- ── PAGE: EPM Client Settings (Intune elevation settings policy) ── -->
+                    <StackPanel x:Name="panelEpmSettings" Visibility="Collapsed">
+
+
+                        <!-- Existing policies -->
+                        <Border Background="#26272B" CornerRadius="10" Padding="20,8,20,20" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="ELEVATION SETTINGS POLICIES IN INTUNE" Style="{StaticResource SectionHeader}"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <Button x:Name="btnCsRefresh" Style="{StaticResource SecondaryButton}" Content="Refresh" Padding="14,7"/>
+                                    <Button x:Name="btnCsEdit" Style="{StaticResource SecondaryButton}" Content="Edit selected" Padding="14,7" Margin="8,0,0,0"/>
+                                    <Button x:Name="btnCsNew" Style="{StaticResource SecondaryButton}" Content="New policy" Padding="14,7" Margin="8,0,0,0"/>
+                                </StackPanel>
+                                <DataGrid x:Name="gridCsPolicies" Style="{StaticResource ResultGrid}" Height="150"/>
+                                <TextBlock x:Name="lblCsPolicyInfo" Text="Select a policy to see its settings and assignments."
+                                           FontSize="12" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Settings form -->
+                        <Border Background="#26272B" CornerRadius="10" Padding="20,8,20,20">
+                            <StackPanel>
+                                <TextBlock x:Name="lblCsMode" Text="NEW POLICY" Style="{StaticResource SectionHeader}" Foreground="#C97B3D"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Policy name *" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox x:Name="txtCsName" Style="{StaticResource InputBox}" Height="34" Text="EPM – Client settings"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Description" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox x:Name="txtCsDesc" Style="{StaticResource InputBox}" Height="34"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <TextBlock Text="ENDPOINT PRIVILEGE MANAGEMENT" Style="{StaticResource SectionHeader}"/>
+                                <WrapPanel>
+                                    <RadioButton x:Name="rbCsEnabled" GroupName="CsEnable" Style="{StaticResource PillRadio}" Content="Enabled" IsChecked="True"/>
+                                    <RadioButton x:Name="rbCsDisabled" GroupName="CsEnable" Style="{StaticResource PillRadio}" Content="Disabled"/>
+                                </WrapPanel>
+                                <TextBlock x:Name="lblCsDisabledHelp" Visibility="Collapsed" FontSize="11" Foreground="#E0A868" TextWrapping="Wrap"
+                                           Text="Disabled turns the EPM client off on assigned devices; elevation rules stop working there."/>
+
+                                <StackPanel x:Name="panelCsWhenEnabled">
+                                    <TextBlock Text="DEFAULT ELEVATION RESPONSE (files without a matching rule)" Style="{StaticResource SectionHeader}"/>
+                                    <WrapPanel>
+                                        <RadioButton x:Name="rbCsRespNone" GroupName="CsResp" Style="{StaticResource PillRadio}" Content="Not configured" IsChecked="True"/>
+                                        <RadioButton x:Name="rbCsRespDeny" GroupName="CsResp" Style="{StaticResource PillRadio}" Content="Deny all requests"/>
+                                        <RadioButton x:Name="rbCsRespSupport" GroupName="CsResp" Style="{StaticResource PillRadio}" Content="Require support approval"/>
+                                        <RadioButton x:Name="rbCsRespUser" GroupName="CsResp" Style="{StaticResource PillRadio}" Content="Require user confirmation"/>
+                                    </WrapPanel>
+                                    <TextBlock x:Name="lblCsRespHelp" FontSize="11" Foreground="#A3A29E" TextWrapping="Wrap" Margin="0,2,0,6"/>
+                                    <WrapPanel x:Name="panelCsValidation" Visibility="Collapsed">
+                                        <CheckBox x:Name="chkCsJust" Style="{StaticResource DarkCheck}" Content="Business justification"/>
+                                        <CheckBox x:Name="chkCsAuth" Style="{StaticResource DarkCheck}" Content="Windows authentication"/>
+                                    </WrapPanel>
+
+                                    <TextBlock Text="SEND ELEVATION DATA FOR REPORTING" Style="{StaticResource SectionHeader}"/>
+                                    <WrapPanel>
+                                        <RadioButton x:Name="rbCsSendYes" GroupName="CsSend" Style="{StaticResource PillRadio}" Content="Yes" IsChecked="True"/>
+                                        <RadioButton x:Name="rbCsSendNo" GroupName="CsSend" Style="{StaticResource PillRadio}" Content="No"/>
+                                    </WrapPanel>
+                                    <StackPanel x:Name="panelCsScope">
+                                        <TextBlock Text="Reporting scope" Style="{StaticResource FieldLabel}" Margin="0,4,0,4"/>
+                                        <WrapPanel>
+                                            <RadioButton x:Name="rbCsScopeAll" GroupName="CsScope" Style="{StaticResource PillRadio}" Content="Diagnostic data and all endpoint elevations" IsChecked="True"/>
+                                            <RadioButton x:Name="rbCsScopeManaged" GroupName="CsScope" Style="{StaticResource PillRadio}" Content="Diagnostic data and managed elevations only"/>
+                                            <RadioButton x:Name="rbCsScopeDiag" GroupName="CsScope" Style="{StaticResource PillRadio}" Content="Diagnostic data only"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel x:Name="panelCsAssign">
+                                    <TextBlock Text="DEPLOY TO" Style="{StaticResource SectionHeader}"/>
+                                    <WrapPanel>
+                                        <RadioButton x:Name="rbCsAssignNone" GroupName="CsAssign" Style="{StaticResource PillRadio}" Content="Don't assign yet" IsChecked="True"/>
+                                        <RadioButton x:Name="rbCsAssignUsers" GroupName="CsAssign" Style="{StaticResource PillRadio}" Content="All users"/>
+                                        <RadioButton x:Name="rbCsAssignDevices" GroupName="CsAssign" Style="{StaticResource PillRadio}" Content="All devices"/>
+                                        <RadioButton x:Name="rbCsAssignGroup" GroupName="CsAssign" Style="{StaticResource PillRadio}" Content="Group…"/>
+                                    </WrapPanel>
+                                    <StackPanel x:Name="panelCsGroup" Visibility="Collapsed">
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox x:Name="txtCsGroupSearch" Style="{StaticResource InputBox}" Height="32" ToolTip="Group name starts with…"/>
+                                            <Button x:Name="btnCsGroupSearch" Grid.Column="1" Style="{StaticResource SecondaryButton}"
+                                                    Content="Search groups" Padding="14,7" Margin="8,0,0,0"/>
+                                        </Grid>
+                                        <DataGrid x:Name="gridCsGroups" Style="{StaticResource ResultGrid}" Height="120"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock x:Name="lblCsEditAssignNote" Visibility="Collapsed" FontSize="11" Foreground="#8C8B86" TextWrapping="Wrap" Margin="0,12,0,0"
+                                           Text="Editing keeps the policy's current assignments. Change assignments in Intune if needed."/>
+
+                                <TextBlock x:Name="lblCsConflict" Visibility="Collapsed" FontSize="11" Foreground="#E0A868" TextWrapping="Wrap" Margin="0,12,0,0"/>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                    <Button x:Name="btnCsPush" Style="{StaticResource ActionButton}" Content="Create &amp; deploy" Padding="18,10" FontSize="13"/>
+                                    <Button x:Name="btnCsDryRun" Style="{StaticResource SecondaryButton}" Content="Dry run" Padding="14,9" Margin="8,0,0,0"/>
+                                </StackPanel>
+                                <Border x:Name="panelCsResult" Visibility="Collapsed" CornerRadius="8" Padding="12,10" Margin="0,12,0,0" BorderThickness="1">
+                                    <TextBlock x:Name="lblCsResult" FontSize="12" TextWrapping="Wrap"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
                 </Grid>
             </ScrollViewer>
@@ -1281,7 +1435,7 @@ $script:GraphClient   = '14d82eec-204b-4c2f-b7e8-296a70dab67e'   # Microsoft Gra
 $script:GraphScope    = 'DeviceManagementManagedDevices.Read.All offline_access'
 # Create Rule needs write access to Settings Catalog policies (+ group lookup for assignments)
 $script:GraphScopeRules = 'DeviceManagementManagedDevices.Read.All DeviceManagementConfiguration.ReadWrite.All Group.Read.All offline_access'
-$script:GraphScopeActive = $script:GraphScope     # scope used for the current token (needed for refresh)
+$script:GraphScopeActive = $script:GraphScopeRules # scope used for the current token (needed for refresh)
 $script:GraphAccount  = $null
 $script:GraphAuthMode = 'user'    # 'user' (delegated, browser) or 'app' (service principal + secret)
 $script:GraphAppId    = $null
@@ -1289,7 +1443,6 @@ $script:GraphAppSecret = $null    # SecureString, memory only
 $script:EpmSettingsFile = Join-Path $env:APPDATA 'EpmTools\settings.json'
 
 # Create Rule / Intune state
-$script:Sync               = [hashtable]::Synchronized(@{ PendingEventId = $null })  # filled by the report window
 $script:ElevationEvents    = @()      # flattened events (report rows)
 $script:ElevationEventsRaw = @{}      # id -> raw Graph elevation event
 $script:EpmPolicies        = @()      # cached elevation rules policies
@@ -1377,7 +1530,7 @@ $script:ShowPanel = {
     $panels = @(
         'panelHome','panelPolicies','panelElevationRules',
         'panelClientSettings','panelFileAttributes','panelReports',
-        'panelCreateRule','panelRulePolicies'
+        'panelGraphAuth','panelCreateRule','panelRulePolicies','panelEpmSettings'
     )
     foreach ($p in $panels) {
         $el = $window.FindName($p)
@@ -1439,8 +1592,10 @@ $navMap = @{
     'navClientSettings'   = @{ Panel = 'panelClientSettings';   Title = 'Get-ClientSettings';                Sub = 'Display effective client settings used by EPM' }
     'navFileAttributes'   = @{ Panel = 'panelFileAttributes';   Title = 'Get-FileAttributes';                Sub = 'Extract publisher and CA certs from an .exe for rule building' }
     'navReports'          = @{ Panel = 'panelReports';          Title = 'Reports';                           Sub = 'Generate and export EPM reports' }
+    'navGraphAuth'        = @{ Panel = 'panelGraphAuth';        Title = 'Authentication';                    Sub = 'One Microsoft Graph connection for Reports and all Intune pages' }
     'navCreateRule'       = @{ Panel = 'panelCreateRule';       Title = 'Create EPM Rule';                   Sub = 'Build an elevation rule and push it to an Intune EPM policy via Microsoft Graph' }
     'navRulePolicies'     = @{ Panel = 'panelRulePolicies';     Title = 'Rule Policies';                     Sub = 'Browse and export Intune elevation rules policies' }
+    'navEpmSettings'      = @{ Panel = 'panelEpmSettings';      Title = 'EPM Client Settings';               Sub = 'Create, deploy and edit Intune elevation settings policies' }
 }
 
 foreach ($key in $navMap.Keys) {
@@ -1867,18 +2022,44 @@ $window.FindName('btnRunFileAttributes').Add_Click({
 # Reports — Microsoft Graph / EPM Elevation Events
 # (No external module required — pure OAuth2 PKCE via browser)
 # -------------------------------------------------------------
-# Shared status display for the Reports page and the Create Rule page
+# Shared Graph status: sidebar card + Authentication page
 $script:SetGraphStatus = {
     param([string]$Text, [string]$Color)
     $b = [System.Windows.Media.BrushConverter]::new().ConvertFromString($Color)
-    $l1 = $window.FindName('lblGraphStatus');     if ($l1) { $l1.Text = $Text; $l1.Foreground = $b }
-    $l2 = $window.FindName('lblRuleGraphStatus'); if ($l2) { $l2.Text = "Microsoft Graph: $Text"; $l2.Foreground = $b }
-    $d  = $window.FindName('ruleGraphDot');       if ($d)  { $d.Fill = $b }
+    $side = $window.FindName('sideGraphText')
+    $side.Text = $Text; $side.ToolTip = $Text; $side.Foreground = $b
+    $window.FindName('sideGraphDot').Fill = $b
+    $window.FindName('lblAuthStatus').Text = $Text
+    $window.FindName('authGraphDot').Fill  = $b
 }
 
 $script:SetConnectButtons = {
     param([bool]$Enabled)
-    foreach ($n in 'btnConnectGraph','btnRuleConnectGraph') { $b = $window.FindName($n); if ($b) { $b.IsEnabled = $Enabled } }
+    $window.FindName('btnGraphConnect').IsEnabled = $Enabled
+}
+
+# Connection details on the Authentication page (account, tenant, expiry, permissions)
+$script:AuthUpdateDetails = {
+    $lbl = $window.FindName('lblAuthDetails')
+    if (-not $script:GraphToken) {
+        $lbl.Text = 'One connection for Reports, Create Rule, Rule Policies and Client Settings.'
+        $window.FindName('btnGraphDisconnect').IsEnabled = $false
+        return
+    }
+    $mode  = if ($script:GraphAuthMode -eq 'app') { 'Service principal (client secret)' } else { 'User account (browser sign-in)' }
+    $perms = @(& $script:GetTokenScopes | Where-Object { $_ -ne 'offline_access' -and $_ -notmatch '^(openid|profile|email)$' })
+    $need  = @('DeviceManagementConfiguration.ReadWrite.All','DeviceManagementManagedDevices.Read.All','Group.Read.All')
+    $miss  = @($need | Where-Object { $perms -notcontains $_ })
+    $lines = @(
+        "Mode        : $mode",
+        "Account     : $($script:GraphAccount)",
+        "Tenant      : $($script:GraphTenant)",
+        "Valid until : $($script:GraphExpiry.ToString('HH:mm:ss')) (renews automatically)",
+        "Permissions : $(if ($perms.Count) { $perms -join ', ' } else { '(none)' })"
+    )
+    if ($miss.Count) { $lines += "Missing     : $($miss -join ', ')" }
+    $lbl.Text = $lines -join "`n"
+    $window.FindName('btnGraphDisconnect').IsEnabled = $true
 }
 
 # Decoded claims of the current access token
@@ -2030,8 +2211,9 @@ $script:StartGraphSignIn = {
                     & $script:WriteLog "Signed in as $($res.Account). Token valid until $($script:GraphExpiry.ToString('HH:mm:ss'))." "OK"
                     $scp = & $script:GetTokenScopes
                     if ($scp.Count -gt 0 -and ($scp -notcontains 'DeviceManagementConfiguration.ReadWrite.All')) {
-                        & $script:WriteLog "This token can't create EPM rules (no DeviceManagementConfiguration.ReadWrite.All). Use 'Connect to Graph' on the Create Rule page." "WARN"
+                        & $script:WriteLog "This sign-in can't create or change Intune policies (no DeviceManagementConfiguration.ReadWrite.All consent)." "WARN"
                     }
+                    & $script:AuthUpdateDetails
                 } else {
                     & $script:SetGraphStatus "Sign-in failed: $($res.Error)" '#C1554A'
                     & $script:WriteLog "Graph sign-in failed: $($res.Error)" "ERR"
@@ -2046,10 +2228,6 @@ $script:StartGraphSignIn = {
     $script:AuthTimer = $t
     $t.Start()
 }
-
-$window.FindName('btnConnectGraph').Add_Click({
-    & $script:StartGraphSignIn $window.FindName('txtTenantId').Text.Trim() $script:GraphScope
-})
 
 # Service principal (app registration + client secret) — client credentials flow
 $script:StartAppSignIn = {
@@ -2106,6 +2284,7 @@ $script:StartAppSignIn = {
             Remove-Item -LiteralPath $script:EpmSettingsFile -ErrorAction SilentlyContinue
         }
         $window.FindName('pwdAppSecret').Clear()
+        & $script:AuthUpdateDetails
     } catch {
         # keep the previous connection's details so its token can still renew
         $script:GraphTenant = $prev.Tenant; $script:GraphAppId = $prev.AppId; $script:GraphAppSecret = $prev.Secret
@@ -2124,13 +2303,13 @@ $script:StartAppSignIn = {
     }
 }
 
-$window.FindName('btnRuleConnectGraph').Add_Click({
+$window.FindName('btnGraphConnect').Add_Click({
     if ($window.FindName('rbAuthApp').IsChecked) {
         & $script:StartAppSignIn $window.FindName('txtAppTenantId').Text.Trim() `
                                  $window.FindName('txtAppClientId').Text.Trim() `
                                  $window.FindName('pwdAppSecret').SecurePassword
     } else {
-        & $script:StartGraphSignIn $window.FindName('txtRuleTenantId').Text.Trim() $script:GraphScopeRules
+        & $script:StartGraphSignIn $window.FindName('txtUserTenantId').Text.Trim() $script:GraphScopeRules
     }
 })
 
@@ -2140,6 +2319,20 @@ $window.FindName('rbAuthUser').Add_Checked({
 $window.FindName('rbAuthApp').Add_Checked({
     $window.FindName('panelAuthUser').Visibility = 'Collapsed'; $window.FindName('panelAuthApp').Visibility = 'Visible'
 })
+
+$window.FindName('btnGraphDisconnect').Add_Click({
+    if ($script:AuthTimer) { $script:AuthTimer.Stop(); $script:AuthTimer = $null }
+    $script:GraphToken = $null; $script:GraphRefresh = $null; $script:GraphAccount = $null
+    $script:GraphAppSecret = $null; $script:GraphAppId = $null; $script:GraphAuthMode = 'user'
+    $script:EpmSchemaCache = @{}; $script:EpmRulesTemplate = $null; $script:CsTemplate = $null
+    $script:EpmPolicies = @(); $script:CsPolicies = @(); $script:ElevationEvents = @(); $script:ElevationEventsRaw = @{}
+    $window.FindName('btnLoadElevationReport').IsEnabled = $false
+    & $script:SetGraphStatus 'Not connected' '#C1554A'
+    & $script:AuthUpdateDetails
+    & $script:WriteLog "Disconnected from Microsoft Graph. Tokens and secret cleared from memory." "OK"
+})
+
+$window.FindName('btnReportsAuth').Add_Click({ $window.FindName('navGraphAuth').IsChecked = $true })
 
 # Restore remembered service principal details (never the secret)
 if (Test-Path -LiteralPath $script:EpmSettingsFile) {
@@ -2152,13 +2345,35 @@ if (Test-Path -LiteralPath $script:EpmSettingsFile) {
     } catch {}
 }
 
-# Fetches all elevation events (all pages), keeps the raw events by id for
-# the Create Rule page and returns the flattened rows used by the report.
+# Fetches elevation events from the Intune reporting service (report
+# EpmElevationReportElevationEvent), keeps the raw rows by id for the
+# Create Rule page and returns the flattened rows used by the report.
+# $Days > 0 keeps only events from the last N days.
+$script:EpmEventColumns = @('ID','EventDateTime','DeviceId','DeviceName','Upn','UserType','ElevationType','Result',
+    'FilePath','FileDescription','FileVersion','ProductName','CompanyName','InternalName','Hash','ProcessType',
+    'ParentProcessName','IsSystemInitiated','Justification','PolicyId','PolicyName','RuleId')
+
 $script:GetElevationEvents = {
-    & $script:WriteLog "Fetching EPM elevation events from Microsoft Graph..."
-    $allItems = @(& $script:GraphGetAll 'https://graph.microsoft.com/beta/deviceManagement/privilegeManagementElevations')
+    param([int]$Days = 0)
+    $allItems = @(& $script:EpmRunReport @('EpmElevationReportElevationEvent') $script:EpmEventColumns $null)
+    if ($Days -gt 0) {
+        $since = (Get-Date).ToUniversalTime().AddDays(-$Days)
+        $styles = [System.Globalization.DateTimeStyles]'AssumeUniversal, AdjustToUniversal'
+        $allItems = @($allItems | Where-Object {
+            $d = [datetime]::MinValue
+            $ok = [datetime]::TryParse("$($_.EventDateTime)", [System.Globalization.CultureInfo]::InvariantCulture, $styles, [ref]$d)
+            if (-not $ok) { $ok = [datetime]::TryParse("$($_.EventDateTime)", [System.Globalization.CultureInfo]::CurrentCulture, $styles, [ref]$d) }
+            (-not $ok) -or ($d -ge $since)    # keep rows we can't date
+        })
+        & $script:WriteLog "$($allItems.Count) event(s) in the last $Days day(s)." "INFO"
+    }
     $script:ElevationEventsRaw = @{}
-    foreach ($ev in $allItems) { if ($ev.id) { $script:ElevationEventsRaw["$($ev.id)"] = $ev } }
+    $i = 0
+    foreach ($ev in $allItems) {
+        $i++
+        if (-not "$($ev.ID)") { $ev.ID = "row$i" }
+        $script:ElevationEventsRaw["$($ev.ID)"] = $ev
+    }
     $results = @($allItems | ForEach-Object {
             $ev = $_
             $rawResult = "$($ev.result)"
@@ -2203,10 +2418,54 @@ $script:GetElevationEvents = {
     return $results
 }
 
+$script:ReportKinds = [ordered]@{
+    rbRepByApp    = @{ Names = @('EpmAggregationReportByApplicationV2','EpmAggregationReportByApplication'); Info = 'Elevation counts per application (file, version, hash, publisher, elevation type).' }
+    rbRepByPub    = @{ Names = @('EpmAggregationReportByPublisherV2','EpmAggregationReportByPublisher');     Info = 'Elevation counts per publisher and elevation type.' }
+    rbRepByUser   = @{ Names = @('EpmAggregationReportByUserV2','EpmAggregationReportByUser');               Info = 'Managed, unmanaged and total elevations per user.' }
+    rbRepDenied   = @{ Names = @('EpmDeniedReport');                   Info = 'Denied elevations per user, device and file, per month.' }
+    rbRepFrequent = @{ Names = @('EpmInsightsMostFrequentElevations'); Info = 'Most frequently elevated files this month.' }
+    rbRepTrend    = @{ Names = @('EpmInsightsElevationTrend');         Info = 'Daily elevation counts per elevation type.' }
+}
+
+$script:ReportUpdateUi = {
+    $events = [bool]$window.FindName('rbRepEvents').IsChecked
+    $window.FindName('panelRepRange').Visibility = if ($events) { 'Visible' } else { 'Collapsed' }
+    $info = 'Every elevation event (report EpmElevationReportElevationEvent). Opens in the report window with column filters, export and Create rule from selection.'
+    foreach ($k in $script:ReportKinds.Keys) {
+        if ($window.FindName($k).IsChecked) { $info = "$($script:ReportKinds[$k].Info) Opens in the report window with column filters (report $($script:ReportKinds[$k].Names[0]))." }
+    }
+    $window.FindName('lblRepInfo').Text = $info
+}
+foreach ($n in @('rbRepEvents') + @($script:ReportKinds.Keys)) { $window.FindName($n).Add_Checked({ & $script:ReportUpdateUi }) }
+& $script:ReportUpdateUi
+
 $window.FindName('btnLoadElevationReport').Add_Click({
+    # Aggregated / insight reports -> main Results Grid
+    foreach ($k in $script:ReportKinds.Keys) {
+        if (-not $window.FindName($k).IsChecked) { continue }
+        $window.Cursor = [System.Windows.Input.Cursors]::Wait
+        $window.FindName('btnLoadElevationReport').IsEnabled = $false
+        try {
+            $rows = @(& $script:EpmRunReport $script:ReportKinds[$k].Names $null $null)
+            if ($rows.Count -eq 0) { & $script:WriteLog "The report returned no rows." "WARN"; return }
+            $label = "$($window.FindName($k).Content)"
+            & $script:ShowReportViewer "EPM report: $label" "$($script:ReportKinds[$k].Info) ($($script:ReportKinds[$k].Names -join ' / '))" $rows $null $false ("Epm" + ($label -replace '\W', ''))
+        } catch {
+            $m = & $script:EpmReportError "$($_.Exception.Message)"
+            & $script:WriteLog "Report failed: $m" "ERR"
+        } finally {
+            $window.FindName('btnLoadElevationReport').IsEnabled = $true
+            $window.Cursor = [System.Windows.Input.Cursors]::Arrow
+        }
+        return
+    }
+
+    # Elevation events -> report window
+    $days = if ($window.FindName('rbRange7').IsChecked) { 7 } elseif ($window.FindName('rbRange30').IsChecked) { 30 } elseif ($window.FindName('rbRange90').IsChecked) { 90 } else { 0 }
     $window.Cursor = [System.Windows.Input.Cursors]::Wait
+    $window.FindName('btnLoadElevationReport').IsEnabled = $false
     try {
-        $results = @(& $script:GetElevationEvents)
+        $results = @(& $script:GetElevationEvents $days)
 
         if ($results.Count -eq 0) {
             & $script:WriteLog "No elevation events returned." "WARN"
@@ -2218,41 +2477,212 @@ $window.FindName('btnLoadElevationReport').Add_Click({
 
         & $script:WriteLog "Loaded $($results.Count) elevation event(s) — opening report window." "OK"
 
-        # Serialize for the new STA runspace
-        $json  = $results | ConvertTo-Json -Depth 5
-        $count = $results.Count
+        $period = if ($days -gt 0) { "last $days day(s)" } else { 'everything Intune keeps' }
+        & $script:ShowReportViewer 'Elevation events' "EpmElevationReportElevationEvent · $period · select one event and click Create rule from selection to build a rule" $results $null $true 'EpmElevationEvents'
 
-        $gridScript = {
-            param([string]$Json, [int]$Count, $Sync)
-            Add-Type -AssemblyName PresentationFramework
-            Add-Type -AssemblyName PresentationCore
-            Add-Type -AssemblyName WindowsBase
-            Add-Type -AssemblyName System.Windows.Forms
+    } catch {
+        $m = & $script:EpmReportError "$($_.Exception.Message)"
+        & $script:WriteLog "Error fetching elevation events: $m" "ERR"
+    } finally {
+        $window.FindName('btnLoadElevationReport').IsEnabled = ($null -ne $script:GraphToken)
+        $window.Cursor = [System.Windows.Input.Cursors]::Arrow
+    }
+})
 
-            $rawData = $Json | ConvertFrom-Json
+# =============================================================
+# REPORT VIEWER — separate window for any report: column filters,
+# column chooser, selection, export (visible / selected rows).
+# Runs on the UI thread as a non-modal window owned by the main
+# window. Per-window state lives in $w.Tag (handlers read it back
+# with [Window]::GetWindow($this).Tag).
+# =============================================================
 
-            # Build DataTable (all string columns so RowFilter LIKE works)
-            $dt    = New-Object System.Data.DataTable
-            $items = @($rawData)
-            if ($items.Count -gt 0) {
-                $props = $items[0] | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
-                foreach ($p in $props) { [void]$dt.Columns.Add($p) }
-                foreach ($item in $items) {
-                    $row = $dt.NewRow()
-                    foreach ($p in $props) {
-                        $v = $item.$p
-                        $row[$p] = if ($null -eq $v) { '' } else { $v.ToString() }
+# ---- Pure helpers (no WPF) ----------------------------------
+$script:RvLikeEscape = {
+    param([string]$Text)
+    # one pass, so brackets added for one character aren't escaped again
+    $sb = New-Object System.Text.StringBuilder
+    foreach ($ch in $Text.ToCharArray()) {
+        $rep = switch ($ch) { '[' { '[[]' } ']' { '[]]' } '*' { '[*]' } '%' { '[%]' } "'" { "''" } default { [string]$ch } }
+        [void]$sb.Append($rep)
+    }
+    $sb.ToString()
+}
+
+# Rows -> typed DataTable (num / date / text) + distinct values per text column
+$script:RvBuildTable = {
+    param($Rows, [string[]]$Columns)
+    $Rows = @($Rows)
+    if (-not $Columns -or $Columns.Count -eq 0) {
+        $Columns = if ($Rows.Count) { @($Rows[0].PSObject.Properties | ForEach-Object { $_.Name }) } else { @() }
+    }
+    $inv    = [System.Globalization.CultureInfo]::InvariantCulture
+    $styles = [System.Globalization.DateTimeStyles]'AssumeUniversal, AdjustToUniversal'
+    $types  = [ordered]@{}; $distinct = @{}
+    foreach ($c in $Columns) {
+        $vals = @($Rows | ForEach-Object { "$($_.$c)".Trim() } | Where-Object { $_ -ne '' })
+        $type = 'text'
+        if ($vals.Count -gt 0) {
+            $num = @($vals | Where-Object { $_ -notmatch '^-?\d+([.,]\d+)?$' -or ($_.Length -gt 1 -and $_ -match '^0\d') }).Count -eq 0
+            if ($num) { $type = 'num' }
+            else {
+                $isDate = $true
+                foreach ($v in $vals) {
+                    $d = [datetime]::MinValue
+                    if ($v -notmatch '^\d{4}-\d{2}-\d{2}([T ]\d{1,2}:\d{2}(:\d{2})?(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$' -or
+                        -not [datetime]::TryParse($v, $inv, $styles, [ref]$d)) { $isDate = $false; break }
+                }
+                if ($isDate) { $type = 'date' }
+            }
+        }
+        $types[$c] = $type
+        if ($type -eq 'text') {
+            $groups = @($Rows | ForEach-Object { "$($_.$c)".Trim() } | Group-Object | Sort-Object Count -Descending)
+            $distinct[$c] = @($groups | ForEach-Object { [pscustomobject]@{ Value = $_.Name; Count = $_.Count } })
+        }
+    }
+    $dt = New-Object System.Data.DataTable
+    foreach ($c in $Columns) {
+        $t = switch ($types[$c]) { 'num' { [double] } 'date' { [datetime] } default { [string] } }
+        [void]$dt.Columns.Add($c, $t)
+    }
+    foreach ($r in $Rows) {
+        $row = $dt.NewRow()
+        foreach ($c in $Columns) {
+            $v = "$($r.$c)".Trim()
+            if ($v -eq '') { $row[$c] = [DBNull]::Value; continue }
+            switch ($types[$c]) {
+                'num'  { $row[$c] = [double]::Parse($v.Replace(',', '.'), $inv) }
+                'date' { $d = [datetime]::MinValue; [void][datetime]::TryParse($v, $inv, $styles, [ref]$d); $row[$c] = $d.ToLocalTime() }
+                default { $row[$c] = $v }
+            }
+        }
+        [void]$dt.Rows.Add($row)
+    }
+    [pscustomobject]@{ Table = $dt; Columns = $Columns; Types = $types; Distinct = $distinct }
+}
+
+# Filter definitions -> DataView.RowFilter expression
+#   @{ Col; Kind = 'list'; Values = @(...); All = $bool }   ('' = empty)
+#   @{ Col; Kind = 'text'; Text = '...' }
+#   @{ Col; Kind = 'range'; Type = 'num'|'date'; From = '..'; To = '..' }
+$script:RvFilterExpression = {
+    param($Filters, [string]$Search, [string[]]$Columns)
+    $inv   = [System.Globalization.CultureInfo]::InvariantCulture
+    $parts = New-Object System.Collections.Generic.List[string]
+    foreach ($f in @($Filters)) {
+        $c = "[$($f.Col)]"
+        switch ($f.Kind) {
+            'list' {
+                if ($f.All) { break }
+                $vals = @($f.Values)
+                if ($vals.Count -eq 0) { $parts.Add('1 = 0'); break }
+                $or = @()
+                $named = @($vals | Where-Object { $_ -ne '' } | ForEach-Object { "'" + $_.Replace("'", "''") + "'" })
+                if ($named.Count) { $or += "$c IN ($($named -join ', '))" }
+                if ($vals -contains '') { $or += "($c IS NULL OR $c = '')" }
+                $parts.Add('(' + ($or -join ' OR ') + ')')
+            }
+            'text' {
+                $t = "$($f.Text)".Trim()
+                if ($t) { $parts.Add("$c LIKE '%$(& $script:RvLikeEscape $t)%'") }
+            }
+            'range' {
+                foreach ($side in 'From', 'To') {
+                    $raw = "$($f.$side)".Trim()
+                    if (-not $raw) { continue }
+                    $op = if ($side -eq 'From') { '>=' } else { '<=' }
+                    if ($f.Type -eq 'num') {
+                        $n = 0.0
+                        if ([double]::TryParse($raw.Replace(',', '.'), [System.Globalization.NumberStyles]::Float, $inv, [ref]$n)) {
+                            $parts.Add("$c $op $($n.ToString($inv))")
+                        }
+                    } else {
+                        $d = [datetime]::MinValue
+                        $ok = [datetime]::TryParseExact($raw, @('yyyy-MM-dd', 'yyyy-MM-dd HH:mm'), $inv, [System.Globalization.DateTimeStyles]::None, [ref]$d)
+                        if (-not $ok) { $ok = [datetime]::TryParse($raw, [System.Globalization.CultureInfo]::CurrentCulture, [System.Globalization.DateTimeStyles]::None, [ref]$d) }
+                        if ($ok) {
+                            if ($side -eq 'To' -and $raw -notmatch ':') { $d = $d.Date.AddDays(1); $op = '<' }   # whole "to" day
+                            $parts.Add("$c $op #$($d.ToString('MM/dd/yyyy HH:mm:ss', $inv))#")
+                        }
                     }
-                    $dt.Rows.Add($row)
                 }
             }
+        }
+    }
+    $s = "$Search".Trim()
+    if ($s -and $Columns) {
+        $e = & $script:RvLikeEscape $s
+        $parts.Add('(' + ((@($Columns) | ForEach-Object { "CONVERT([$_], 'System.String') LIKE '%$e%'" }) -join ' OR ') + ')')
+    }
+    $parts -join ' AND '
+}
 
-            [xml]$xaml = @'
+# DataRowViews -> ordered objects with the given columns (for export)
+$script:RvRowsToObjects = {
+    param($RowViews, [string[]]$Columns)
+    foreach ($rv in @($RowViews)) {
+        $o = [ordered]@{}
+        foreach ($c in $Columns) {
+            $v = $rv.Row[$c]
+            $o[$c] = if ($v -is [DBNull] -or $null -eq $v) { '' }
+                     elseif ($v -is [datetime]) { $v.ToString('yyyy-MM-dd HH:mm:ss') }
+                     elseif ($v -is [double]) { $v.ToString([System.Globalization.CultureInfo]::InvariantCulture) }
+                     else { "$v" }
+        }
+        [pscustomobject]$o
+    }
+}
+
+# ---- Window -------------------------------------------------
+$script:ReportViewerXaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Height="700" Width="1300" MinHeight="400" MinWidth="700"
-        WindowStartupLocation="CenterScreen"
-        Background="#17181C" Foreground="#E8E6E1" FontFamily="Segoe UI">
+        Title="EpmTools — Report" Height="820" Width="1360" MinHeight="420" MinWidth="820"
+        WindowStartupLocation="CenterOwner" Background="#17181C" Foreground="#E8E6E1" FontFamily="Segoe UI">
+    <Window.Resources>
+        <Style x:Key="Btn" TargetType="Button">
+            <Setter Property="Background" Value="#35363B"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="B" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="B" Property="Opacity" Value="0.85"/></Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter TargetName="B" Property="Opacity" Value="0.4"/></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource Btn}">
+            <Setter Property="Background" Value="#C97B3D"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style x:Key="Box" TargetType="TextBox">
+            <Setter Property="Background" Value="#26272B"/>
+            <Setter Property="Foreground" Value="#E8E6E1"/>
+            <Setter Property="CaretBrush" Value="#C97B3D"/>
+            <Setter Property="BorderBrush" Value="#35363B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style x:Key="Head" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#8C8B86"/>
+            <Setter Property="Margin" Value="0,16,0,6"/>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -2260,146 +2690,315 @@ $window.FindName('btnLoadElevationReport').Add_Click({
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Toolbar: filter + export -->
-        <Border Grid.Row="0" Background="#1F2023" Padding="12,8"
-                BorderBrush="#35363B" BorderThickness="0,0,0,1">
+        <Border Background="#1F2023" BorderBrush="#35363B" BorderThickness="0,0,0,1" Padding="18,12">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="txtFilter"
-                         Background="#26272B" Foreground="#E8E6E1"
-                         CaretBrush="#C97B3D" BorderBrush="#35363B" BorderThickness="1"
-                         Padding="8,7" FontSize="12" VerticalAlignment="Center"
-                         ToolTip="Type to filter across all columns…"/>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
-                    <Button x:Name="btnCreateRule"
-                            Content="Create rule from selection"
-                            Background="#3A2A1C" Foreground="#F0C08A" BorderBrush="#C97B3D" BorderThickness="1"
-                            Padding="14,8" Margin="0,0,8,0" FontSize="11"
-                            FontWeight="SemiBold" Cursor="Hand"
-                            ToolTip="Opens Create Rule in the main window, prefilled from the selected event"/>
-                    <Button x:Name="btnExport"
-                            Content="Export CSV"
-                            Background="#C97B3D" Foreground="White" BorderThickness="0"
-                            Padding="14,8" Margin="0,0,8,0" FontSize="11"
-                            FontWeight="SemiBold" Cursor="Hand"/>
-                    <Button x:Name="btnClose"
-                            Content="Close"
-                            Background="#35363B" Foreground="White" BorderThickness="0"
-                            Padding="14,8" FontSize="11"
-                            FontWeight="SemiBold" Cursor="Hand"/>
+                <StackPanel>
+                    <TextBlock x:Name="rvTitle" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="rvSub" FontSize="11" Foreground="#A3A29E" Margin="0,2,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
+                <TextBlock x:Name="rvStatus" Grid.Column="1" FontSize="12" Foreground="#E0A868" VerticalAlignment="Center" FontFamily="Consolas"/>
             </Grid>
         </Border>
 
-        <!-- Results grid -->
-        <DataGrid x:Name="dg" Grid.Row="1"
-                  Background="#1F2023" Foreground="#E8E6E1"
-                  BorderBrush="#35363B" BorderThickness="0"
-                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#35363B"
-                  RowBackground="#1F2023" AlternatingRowBackground="#232428"
-                  FontSize="12" AutoGenerateColumns="True" IsReadOnly="True"
-                  SelectionMode="Single" HeadersVisibility="Column"
-                  CanUserResizeRows="False" HorizontalScrollBarVisibility="Auto"
-                  VerticalScrollBarVisibility="Auto">
-            <DataGrid.ColumnHeaderStyle>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background"       Value="#26272B"/>
-                    <Setter Property="Foreground"       Value="#A3A29E"/>
-                    <Setter Property="Padding"          Value="10,6"/>
-                    <Setter Property="FontSize"         Value="11"/>
-                    <Setter Property="FontWeight"       Value="SemiBold"/>
-                    <Setter Property="BorderBrush"      Value="#35363B"/>
-                    <Setter Property="BorderThickness"  Value="0,0,0,1"/>
-                </Style>
-            </DataGrid.ColumnHeaderStyle>
-            <DataGrid.CellStyle>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Padding"         Value="10,5"/>
-                    <Setter Property="Foreground"      Value="#E8E6E1"/>
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#35363B"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.CellStyle>
-        </DataGrid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="310"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Background="#1F2023" BorderBrush="#35363B" BorderThickness="0,0,1,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="14,4,14,14">
+                        <TextBlock Text="SEARCH ALL COLUMNS" Style="{StaticResource Head}"/>
+                        <TextBox x:Name="rvSearch" Style="{StaticResource Box}"/>
+                        <Button x:Name="rvClear" Style="{StaticResource Btn}" Content="Clear all filters" HorizontalAlignment="Left" Margin="0,8,0,0" Padding="12,6"/>
+                        <TextBlock Text="FILTERS" Style="{StaticResource Head}"/>
+                        <StackPanel x:Name="rvFilters"/>
+                        <Grid Margin="0,16,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="COLUMNS" FontSize="9" FontWeight="Bold" Foreground="#8C8B86" VerticalAlignment="Center"/>
+                            <Button x:Name="rvColsAll" Grid.Column="1" Style="{StaticResource Btn}" Content="Show all" Padding="8,3" Margin="0" FontSize="10"/>
+                        </Grid>
+                        <StackPanel x:Name="rvColumns"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
 
-        <!-- Status bar -->
-        <Border Grid.Row="2" Background="#1F2023" Padding="12,6"
-                BorderBrush="#35363B" BorderThickness="0,1,0,0">
-            <TextBlock x:Name="lblStatus" FontSize="11" FontFamily="Consolas"
-                       Foreground="#6B6A66"/>
+            <DataGrid x:Name="rvGrid" Grid.Column="1" Margin="12"
+                      Background="#1F2023" Foreground="#E8E6E1" BorderBrush="#35363B" BorderThickness="1"
+                      GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#2E2F34"
+                      RowBackground="#1F2023" AlternatingRowBackground="#232428"
+                      FontSize="12" AutoGenerateColumns="True" IsReadOnly="True"
+                      SelectionMode="Extended" SelectionUnit="FullRow" HeadersVisibility="Column"
+                      CanUserResizeRows="False" CanUserReorderColumns="True" CanUserSortColumns="True"
+                      EnableRowVirtualization="True" EnableColumnVirtualization="True"
+                      ClipboardCopyMode="IncludeHeader">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#26272B"/>
+                        <Setter Property="Foreground" Value="#A3A29E"/>
+                        <Setter Property="Padding" Value="10,7"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="BorderBrush" Value="#35363B"/>
+                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="10,5"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#3A2A1C"/>
+                                <Setter Property="Foreground" Value="#F0C08A"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.CellStyle>
+            </DataGrid>
+        </Grid>
+
+        <Border Grid.Row="2" Background="#1F2023" BorderBrush="#35363B" BorderThickness="0,1,0,0" Padding="14,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="rvCreateRule" Style="{StaticResource BtnPrimary}" Content="Create rule from selection" Visibility="Collapsed"/>
+                    <Button x:Name="rvExportVisible" Style="{StaticResource Btn}" Content="Export filtered rows…"/>
+                    <Button x:Name="rvExportSelected" Style="{StaticResource Btn}" Content="Export selected rows…"/>
+                    <Button x:Name="rvCopy" Style="{StaticResource Btn}" Content="Copy selected"/>
+                </StackPanel>
+                <TextBlock x:Name="rvHint" Grid.Column="1" FontSize="11" Foreground="#8C8B86" VerticalAlignment="Center" Margin="8,0" TextTrimming="CharacterEllipsis"
+                           Text="Ctrl/Shift-click to select rows · click a header to sort · drag headers to reorder · exports use the visible columns in this order"/>
+                <Button x:Name="rvClose" Grid.Column="2" Style="{StaticResource Btn}" Content="Close" Margin="0"/>
+            </Grid>
         </Border>
     </Grid>
 </Window>
 '@
-            $reader = [System.Xml.XmlNodeReader]::new($xaml)
-            $w      = [System.Windows.Markup.XamlReader]::Load($reader)
-            $w.Title = "EPM Elevation Events — $Count record(s)"
 
-            $dg  = $w.FindName('dg')
-            $lbl = $w.FindName('lblStatus')
-            $txt = $w.FindName('txtFilter')
+$script:RvState = { [System.Windows.Window]::GetWindow($this).Tag }
 
-            $dg.ItemsSource = $dt.DefaultView
-            $lbl.Text       = "$Count record(s)"
+$script:RvVisibleColumns = {
+    param($St)
+    @($St.Grid.Columns | Where-Object { $_.Visibility -eq 'Visible' } | Sort-Object DisplayIndex | ForEach-Object { "$($_.Header)" })
+}
 
-            # Live filter across all string columns
-            $txt.Add_TextChanged({
-                $f = $txt.Text.Trim().Replace("'", "''")
-                if ($f) {
-                    $conds = ($dt.Columns | ForEach-Object { "[$($_.ColumnName)] LIKE '%$f%'" }) -join ' OR '
-                    try   { $dt.DefaultView.RowFilter = $conds }
-                    catch { $dt.DefaultView.RowFilter = '' }
-                } else {
-                    $dt.DefaultView.RowFilter = ''
-                }
-                $lbl.Text = "$($dt.DefaultView.Count) of $($dt.Rows.Count) record(s)"
-            }.GetNewClosure())
+$script:RvUpdateStatus = {
+    param($St)
+    $sel = $St.Grid.SelectedItems.Count
+    $St.Status.Text = "Showing $($St.View.Count) of $($St.Table.Rows.Count) rows" + $(if ($sel) { " · $sel selected" } else { '' })
+    $St.Window.FindName('rvExportSelected').IsEnabled = ($sel -gt 0)
+    $St.Window.FindName('rvCopy').IsEnabled = ($sel -gt 0)
+    $cr = $St.Window.FindName('rvCreateRule'); $cr.IsEnabled = ($sel -eq 1)
+}
 
-            $w.FindName('btnExport').Add_Click({
-                $sfd          = [System.Windows.Forms.SaveFileDialog]::new()
-                $sfd.Filter   = 'CSV Files (*.csv)|*.csv'
-                $sfd.FileName = "EPM-Elevations-$(Get-Date -Format 'yyyyMMdd-HHmmss').csv"
-                if ($sfd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
-                    $rawData | Export-Csv -Path $sfd.FileName -NoTypeInformation -Encoding UTF8
-                }
-            }.GetNewClosure())
-
-            # Hand the selected event to the main window (polled by its timer)
-            $w.FindName('btnCreateRule').Add_Click({
-                $sel = $dg.SelectedItem
-                if ($null -eq $sel) { $lbl.Text = 'Select an event first.'; return }
-                $id = "$($sel.Row['Id'])"
-                if (-not $id) { $lbl.Text = 'This row has no event id.'; return }
-                $Sync.PendingEventId = $id
-                $lbl.Text = "Sent to Create Rule: $($sel.Row['FilePath'])"
-            }.GetNewClosure())
-
-            $w.FindName('btnClose').Add_Click({ $w.Close() })
-
-            [void]$w.ShowDialog()
+$script:RvApply = {
+    param($St)
+    $defs = foreach ($f in $St.Filters) {
+        switch ($f.Kind) {
+            'list'  {
+                $checked = @($f.Boxes | Where-Object { $_.IsChecked } | ForEach-Object { "$($_.Tag)" })
+                @{ Col = $f.Col; Kind = 'list'; Values = $checked; All = ($checked.Count -eq $f.Boxes.Count) }
+            }
+            'text'  { @{ Col = $f.Col; Kind = 'text'; Text = $f.Box.Text } }
+            'range' { @{ Col = $f.Col; Kind = 'range'; Type = $f.Type; From = $f.FromBox.Text; To = $f.ToBox.Text } }
         }
-
-        $rs = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-        $rs.ApartmentState = 'STA'
-        $rs.ThreadOptions  = 'ReuseThread'
-        $rs.Open()
-        $ps2 = [System.Management.Automation.PowerShell]::Create()
-        $ps2.Runspace = $rs
-        [void]$ps2.AddScript($gridScript).AddParameters(@{ Json = $json; Count = $count; Sync = $script:Sync })
-        [void]$ps2.BeginInvoke()
-
-    } catch {
-        & $script:WriteLog "Error fetching elevation events: $($_.Exception.Message)" "ERR"
     }
-    $window.Cursor = [System.Windows.Input.Cursors]::Arrow
-})
+    $expr = & $script:RvFilterExpression $defs $St.Window.FindName('rvSearch').Text $St.Columns
+    try { $St.View.RowFilter = $expr; $St.Window.FindName('rvSearch').BorderBrush = & $script:BrushOf '#35363B' }
+    catch { $St.Status.Text = "Filter error: $($_.Exception.Message)"; return }
+    & $script:RvUpdateStatus $St
+}
+
+$script:RvExport = {
+    param($St, [bool]$SelectedOnly)
+    $rowViews = if ($SelectedOnly) { @($St.Grid.SelectedItems) } else { @($St.View) }
+    if ($rowViews.Count -eq 0) { $St.Status.Text = 'Nothing to export.'; return }
+    $cols = & $script:RvVisibleColumns $St
+    $sfd = [System.Windows.Forms.SaveFileDialog]::new()
+    $sfd.Filter   = 'CSV (*.csv)|*.csv|JSON (*.json)|*.json'
+    $sfd.FileName = "$($St.FileBase)-$(Get-Date -Format 'yyyyMMdd-HHmm')"
+    if ($sfd.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    $objs = @(& $script:RvRowsToObjects $rowViews $cols)
+    if ($sfd.FileName -match '\.json$') {
+        ConvertTo-Json -InputObject $objs -Depth 4 | Set-Content -LiteralPath $sfd.FileName -Encoding UTF8
+    } else {
+        $objs | Export-Csv -LiteralPath $sfd.FileName -NoTypeInformation -Encoding UTF8
+    }
+    & $script:WriteLog "Exported $($objs.Count) row(s), $($cols.Count) column(s) to $($sfd.FileName)" "OK"
+    $St.Status.Text = "Exported $($objs.Count) row(s)"
+}
+
+# Opens a report in its own window.
+#   -AllowCreateRule: rows must have an 'Id' column known to $script:ElevationEventsRaw
+$script:ShowReportViewer = {
+    param([string]$Title, [string]$Subtitle, $Rows, [string[]]$Columns, [bool]$AllowCreateRule, [string]$FileBase = 'EpmReport')
+    $w = [System.Windows.Markup.XamlReader]::Parse($script:ReportViewerXaml)
+    $w.Owner = $window
+    $w.Title = "EpmTools — $Title"
+    $built = & $script:RvBuildTable $Rows $Columns
+    $grid  = $w.FindName('rvGrid')
+    $st = @{
+        Window = $w; Grid = $grid; Table = $built.Table; View = $built.Table.DefaultView
+        Columns = $built.Columns; Types = $built.Types; Filters = New-Object System.Collections.ArrayList
+        Status = $w.FindName('rvStatus'); FileBase = $FileBase; AllowCreateRule = $AllowCreateRule
+    }
+    $w.Tag = $st
+    $w.FindName('rvTitle').Text = $Title
+    $w.FindName('rvSub').Text   = $Subtitle
+
+    # columns: dates readable, ids hidden by default
+    $grid.Add_AutoGeneratingColumn({
+        param($s, $e)
+        if ($e.PropertyType -eq [datetime]) { $e.Column.Binding.StringFormat = 'yyyy-MM-dd HH:mm' }
+        if ($e.PropertyName -match '^(Id|ID)$') { $e.Column.Visibility = 'Collapsed' }
+    })
+    $grid.ItemsSource = $st.View
+
+    $muted = & $script:BrushOf '#A3A29E'; $text = & $script:BrushOf '#E8E6E1'
+    $newBox = { $tb = New-Object System.Windows.Controls.TextBox; $tb.Style = $w.FindResource('Box'); $tb }
+    $panel = $w.FindName('rvFilters')
+    foreach ($c in $built.Columns) {
+        $type = $built.Types[$c]
+        $hdr = New-Object System.Windows.Controls.TextBlock
+        $hdr.Text = $c; $hdr.FontSize = 12; $hdr.FontWeight = 'SemiBold'; $hdr.Foreground = $text
+        $hdr.Margin = New-Object System.Windows.Thickness(0, 10, 0, 4)
+        [void]$panel.Children.Add($hdr)
+        $dist = @($built.Distinct[$c])
+        if ($type -eq 'text' -and $dist.Count -ge 1 -and $dist.Count -le 25) {
+            # checklist of distinct values with counts
+            $hdr.Text = "$c  ($($dist.Count) values)"
+            $box = New-Object System.Windows.Controls.StackPanel
+            $sv  = New-Object System.Windows.Controls.ScrollViewer
+            $sv.MaxHeight = 150; $sv.VerticalScrollBarVisibility = 'Auto'; $sv.Content = $box
+            $links = New-Object System.Windows.Controls.StackPanel; $links.Orientation = 'Horizontal'
+            foreach ($lbl in 'All', 'None') {
+                $b = New-Object System.Windows.Controls.Button
+                $b.Content = $lbl; $b.Style = $w.FindResource('Btn'); $b.Padding = New-Object System.Windows.Thickness(8, 2, 8, 2)
+                $b.FontSize = 10; $b.Margin = New-Object System.Windows.Thickness(0, 0, 6, 4); $b.Tag = "$lbl|$c"
+                $b.Add_Click({
+                    $st2 = & $script:RvState; $mode, $col = "$($this.Tag)" -split '\|', 2
+                    $f = $st2.Filters | Where-Object { $_.Col -eq $col } | Select-Object -First 1
+                    $st2.Suspend = $true
+                    foreach ($cb in $f.Boxes) { $cb.IsChecked = ($mode -eq 'All') }
+                    $st2.Suspend = $false
+                    & $script:RvApply $st2
+                })
+                [void]$links.Children.Add($b)
+            }
+            [void]$panel.Children.Add($links)
+            $boxes = @()
+            foreach ($d in $dist) {
+                $cb = New-Object System.Windows.Controls.CheckBox
+                $cb.Content = if ($d.Value -eq '') { "(empty)  $($d.Count)" } else { "$($d.Value)  ($($d.Count))" }
+                $cb.Tag = $d.Value; $cb.IsChecked = $true; $cb.Foreground = $text; $cb.FontSize = 12
+                $cb.Margin = New-Object System.Windows.Thickness(0, 1, 0, 1)
+                $cb.Add_Checked({ $st2 = & $script:RvState; if (-not $st2.Suspend) { & $script:RvApply $st2 } })
+                $cb.Add_Unchecked({ $st2 = & $script:RvState; if (-not $st2.Suspend) { & $script:RvApply $st2 } })
+                [void]$box.Children.Add($cb); $boxes += $cb
+            }
+            [void]$panel.Children.Add($sv)
+            [void]$st.Filters.Add(@{ Col = $c; Kind = 'list'; Boxes = $boxes })
+        } elseif ($type -in @('num', 'date')) {
+            $g = New-Object System.Windows.Controls.Grid
+            foreach ($wd in '*', '8', '*') {
+                $cd = New-Object System.Windows.Controls.ColumnDefinition
+                $cd.Width = if ($wd -eq '*') { New-Object System.Windows.GridLength(1, 'Star') } else { New-Object System.Windows.GridLength(8) }
+                [void]$g.ColumnDefinitions.Add($cd)
+            }
+            $from = & $newBox; $to = & $newBox
+            $hint = if ($type -eq 'date') { 'yyyy-mm-dd' } else { 'number' }
+            $from.ToolTip = "From ($hint)"; $to.ToolTip = "To ($hint)"
+            [System.Windows.Controls.Grid]::SetColumn($to, 2)
+            [void]$g.Children.Add($from); [void]$g.Children.Add($to)
+            $from.Add_TextChanged({ & $script:RvApply (& $script:RvState) })
+            $to.Add_TextChanged({ & $script:RvApply (& $script:RvState) })
+            $hdr.Text = "$c  (from – to, $hint)"
+            [void]$panel.Children.Add($g)
+            [void]$st.Filters.Add(@{ Col = $c; Kind = 'range'; Type = $type; FromBox = $from; ToBox = $to })
+        } else {
+            $tb = & $newBox; $tb.ToolTip = 'contains…'
+            $tb.Add_TextChanged({ & $script:RvApply (& $script:RvState) })
+            $hdr.Text = "$c  (contains)"
+            [void]$panel.Children.Add($tb)
+            [void]$st.Filters.Add(@{ Col = $c; Kind = 'text'; Box = $tb })
+        }
+    }
+
+    # column chooser
+    $colPanel = $w.FindName('rvColumns')
+    foreach ($c in $built.Columns) {
+        $cb = New-Object System.Windows.Controls.CheckBox
+        $cb.Content = $c; $cb.Tag = $c; $cb.Foreground = $text; $cb.FontSize = 12
+        $cb.IsChecked = ($c -notmatch '^(Id|ID)$')
+        $cb.Margin = New-Object System.Windows.Thickness(0, 1, 0, 1)
+        $toggle = {
+            $st2 = & $script:RvState
+            $col = $st2.Grid.Columns | Where-Object { "$($_.Header)" -eq "$($this.Tag)" } | Select-Object -First 1
+            if ($col) { $col.Visibility = if ($this.IsChecked) { 'Visible' } else { 'Collapsed' } }
+        }
+        $cb.Add_Checked($toggle); $cb.Add_Unchecked($toggle)
+        [void]$colPanel.Children.Add($cb)
+    }
+    $w.FindName('rvColsAll').Add_Click({
+        $st2 = & $script:RvState
+        foreach ($cb in $st2.Window.FindName('rvColumns').Children) { $cb.IsChecked = $true }
+    })
+
+    $w.FindName('rvSearch').Add_TextChanged({ & $script:RvApply (& $script:RvState) })
+    $w.FindName('rvClear').Add_Click({
+        $st2 = & $script:RvState
+        $st2.Suspend = $true
+        $st2.Window.FindName('rvSearch').Text = ''
+        foreach ($f in $st2.Filters) {
+            switch ($f.Kind) {
+                'list'  { foreach ($cb in $f.Boxes) { $cb.IsChecked = $true } }
+                'text'  { $f.Box.Text = '' }
+                'range' { $f.FromBox.Text = ''; $f.ToBox.Text = '' }
+            }
+        }
+        $st2.Suspend = $false
+        & $script:RvApply $st2
+    })
+    $grid.Add_SelectionChanged({ & $script:RvUpdateStatus ([System.Windows.Window]::GetWindow($this).Tag) })
+    $w.FindName('rvExportVisible').Add_Click({ & $script:RvExport (& $script:RvState) $false })
+    $w.FindName('rvExportSelected').Add_Click({ & $script:RvExport (& $script:RvState) $true })
+    $w.FindName('rvCopy').Add_Click({
+        $st2 = & $script:RvState
+        $cols = & $script:RvVisibleColumns $st2
+        $objs = @(& $script:RvRowsToObjects @($st2.Grid.SelectedItems) $cols)
+        $lines = @($cols -join "`t") + @($objs | ForEach-Object { $o = $_; ($cols | ForEach-Object { "$($o.$_)" }) -join "`t" })
+        [System.Windows.Clipboard]::SetText($lines -join "`r`n")
+        $st2.Status.Text = "Copied $($objs.Count) row(s) to the clipboard"
+    })
+    if ($AllowCreateRule) {
+        $cr = $w.FindName('rvCreateRule'); $cr.Visibility = 'Visible'; $cr.IsEnabled = $false
+        $cr.Add_Click({
+            $st2 = & $script:RvState
+            $sel = $st2.Grid.SelectedItem
+            if (-not $sel) { return }
+            $id = "$($sel.Row['Id'])"
+            $window.FindName('navCreateRule').IsChecked = $true
+            & $script:RuleLoadEvent $id
+            & $script:RuleGoStep 1
+            [void]$window.Activate()
+        })
+    }
+    $w.FindName('rvClose').Add_Click({ [System.Windows.Window]::GetWindow($this).Close() })
+    & $script:RvUpdateStatus $st
+    $w.Show()
+}
+
 
 # =============================================================
 # INTUNE — EPM elevation rules via Microsoft Graph (beta)
@@ -2450,7 +3049,7 @@ $script:GetAppToken = {
 }
 
 $script:EnsureGraphToken = {
-    if (-not $script:GraphToken) { throw "Not connected to Microsoft Graph. Click 'Connect to Graph' first." }
+    if (-not $script:GraphToken) { throw "Not connected to Microsoft Graph. Sign in on INTUNE → Authentication first." }
     if ($script:GraphAuthMode -eq 'app' -and (Get-Date) -ge $script:GraphExpiry) {
         & $script:WriteLog "App token expired — requesting a new one..." "INFO"
         $tok = & $script:GetAppToken
@@ -2521,6 +3120,73 @@ $script:GraphGetAll = {
         if ($null -ne $r.value) { foreach ($i in @($r.value)) { $i } }
         $next = $r.'@odata.nextLink'
     }
+}
+
+# ---- Intune reporting: export jobs --------------------------
+# POST /deviceManagement/reports/exportJobs -> poll until completed -> download zip -> CSV rows
+$script:DoEvents = {
+    try { [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke([Action]{}, [System.Windows.Threading.DispatcherPriority]::Background) } catch {}
+}
+
+$script:EpmExportReport = {
+    param([string]$ReportName, [string[]]$Select, [string]$Filter, [int]$TimeoutSec = 300)
+    $body = [ordered]@{ reportName = $ReportName; format = 'csv'; localizationType = 'replaceLocalizableValues' }
+    if ($Select) { $body['select'] = @($Select) }
+    if ($Filter) { $body['filter'] = $Filter }
+    & $script:WriteLog "Requesting report $ReportName (export job)..." "INFO"
+    $job = & $script:InvokeGraph 'POST' '/deviceManagement/reports/exportJobs' $body
+    $id  = "$($job.id)"
+    if (-not $id) { throw "Intune didn't return an export job id for $ReportName." }
+    $sw = [System.Diagnostics.Stopwatch]::StartNew(); $last = ''
+    while ("$($job.status)" -notmatch '^complete') {
+        if ("$($job.status)" -match 'fail') { throw "The report job for $ReportName failed in Intune." }
+        if ($sw.Elapsed.TotalSeconds -gt $TimeoutSec) { throw "The report job for $ReportName timed out after $TimeoutSec s (status: $($job.status))." }
+        if ("$($job.status)" -ne $last) { $last = "$($job.status)"; & $script:WriteLog "Report job: $last..." "INFO" }
+        $until = (Get-Date).AddSeconds(2)
+        while ((Get-Date) -lt $until) { & $script:DoEvents; Start-Sleep -Milliseconds 100 }
+        $job = & $script:InvokeGraph 'GET' "/deviceManagement/reports/exportJobs('$id')"
+    }
+    if (-not $job.url) { throw "The report job for $ReportName finished without a download link." }
+    $tmp = Join-Path ([IO.Path]::GetTempPath()) ("EpmTools_" + [guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $tmp | Out-Null
+    try {
+        $zip = Join-Path $tmp 'report.zip'
+        # the link is pre-signed: no Authorization header
+        Invoke-WebRequest -Uri "$($job.url)" -OutFile $zip -UseBasicParsing -ErrorAction Stop
+        Expand-Archive -LiteralPath $zip -DestinationPath $tmp -Force
+        $csv = Get-ChildItem -LiteralPath $tmp -Filter '*.csv' -Recurse | Select-Object -First 1
+        if (-not $csv) { throw "The downloaded report contained no CSV file." }
+        $rows = @(Import-Csv -LiteralPath $csv.FullName -Encoding UTF8)
+        & $script:WriteLog "Report $($ReportName): $($rows.Count) row(s) in $([int]$sw.Elapsed.TotalSeconds) s." "OK"
+        $rows
+    } finally {
+        Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Tries report names in order (e.g. V2 first, then the original) when Intune rejects a name
+$script:EpmRunReport = {
+    param([string[]]$Names, [string[]]$Select, [string]$Filter)
+    $lastErr = $null
+    foreach ($n in $Names) {
+        try { return @(& $script:EpmExportReport $n $Select $Filter) }
+        catch {
+            $lastErr = $_
+            $msg = "$($_.Exception.Message)"
+            if ($msg -match '403|Forbidden') { throw }
+            if ($n -ne $Names[-1]) { & $script:WriteLog "Report $n not accepted ($(($msg -split "`n")[0])). Trying $($Names[[array]::IndexOf($Names, $n) + 1])..." "WARN" }
+        }
+    }
+    throw $lastErr
+}
+
+# Friendly hint for report errors
+$script:EpmReportError = {
+    param([string]$Message)
+    if ($Message -match '403|Forbidden') {
+        return "$Message`n`nYour account needs an Intune role with Endpoint Privilege Management Policy Authoring › View Reports (EpmPolicy.ViewReports)."
+    }
+    return $Message
 }
 
 # ---- Template & setting definitions -------------------------
@@ -3192,7 +3858,7 @@ $script:RuleGoStep = {
     $next.Content = switch ($Step) { 1 { 'Next: Rule details →' } 2 { 'Next: Target policy →' } default { 'Next: Review →' } }
 
     if ($Step -eq 3 -and $script:GraphToken -and @($script:EpmPolicies).Count -eq 0) { & $script:RuleLoadPolicies }
-    if ($Step -eq 3 -and -not $script:GraphToken) { & $script:WriteLog "Connect to Graph (top of this page) to list your elevation rules policies." "WARN" }
+    if ($Step -eq 3 -and -not $script:GraphToken) { & $script:WriteLog "Sign in on INTUNE → Authentication to list your elevation rules policies." "WARN" }
     if ($Step -eq 4) { & $script:RuleBuildSummary }
 }
 
@@ -3569,14 +4235,14 @@ $script:RuleBuildSummary = {
     $scp = & $script:GetTokenScopes
     $lbl = $window.FindName('lblScopeStatus')
     if (-not $script:GraphToken) {
-        $lbl.Text = '✖ Not connected. Click "Connect to Graph" at the top of this page.'; $lbl.Foreground = & $script:BrushOf '#E57A6E'
+        $lbl.Text = '✖ Not connected. Sign in on INTUNE → Authentication.'; $lbl.Foreground = & $script:BrushOf '#E57A6E'
     } elseif ($scp -contains 'DeviceManagementConfiguration.ReadWrite.All') {
         $lbl.Text = "✓ Signed in as $($script:GraphAccount) with DeviceManagementConfiguration.ReadWrite.All"; $lbl.Foreground = & $script:BrushOf '#5FA88A'
     } else {
         $lbl.Text = if ($script:GraphAuthMode -eq 'app') {
             "✖ $($script:GraphAccount) lacks the application permission DeviceManagementConfiguration.ReadWrite.All. Grant it with admin consent in Entra ID, then connect again."
         } else {
-            '✖ The current sign-in lacks DeviceManagementConfiguration.ReadWrite.All. Click "Connect to Graph" at the top of this page to sign in again.'
+            '✖ The current sign-in lacks DeviceManagementConfiguration.ReadWrite.All. Sign in again on INTUNE → Authentication (admin consent may be needed).'
         }
         $lbl.Foreground = & $script:BrushOf '#E57A6E'
     }
@@ -3609,7 +4275,7 @@ $script:RulePush = {
     if (-not $DryRun) {
         $scp = & $script:GetTokenScopes
         if ($scp.Count -gt 0 -and ($scp -notcontains 'DeviceManagementConfiguration.ReadWrite.All')) {
-            $fix = if ($script:GraphAuthMode -eq 'app') { 'Grant the app this application permission with admin consent, then connect again.' } else { 'Use "Connect to Graph" on this page and sign in again.' }
+            $fix = if ($script:GraphAuthMode -eq 'app') { 'Grant the app this application permission with admin consent, then connect again.' } else { 'Sign in again on INTUNE → Authentication (admin consent may be needed).' }
             & $script:SetResult "The current connection lacks DeviceManagementConfiguration.ReadWrite.All. $fix" 'err'
             return
         }
@@ -3765,7 +4431,7 @@ $window.FindName('btnSrcExe').Add_Click({
 $window.FindName('btnSrcEvent').Add_Click({
     if (@($script:ElevationEvents).Count -eq 0) {
         if (-not $script:GraphToken) {
-            [void][System.Windows.MessageBox]::Show('Connect to Graph first (top of this page) to load elevation events.', 'Not connected')
+            [void][System.Windows.MessageBox]::Show('Sign in on INTUNE → Authentication first to load elevation events.', 'Not connected')
             return
         }
         $window.Cursor = [System.Windows.Input.Cursors]::Wait
@@ -3951,22 +4617,493 @@ $window.FindName('btnExportPolicyJson').Add_Click({
     } catch { & $script:WriteLog "Export failed: $($_.Exception.Message)" "ERR" }
 })
 
-# ---- "Create rule from selection" in the report window ------
-$timer.Add_Tick({
-    $id = $script:Sync.PendingEventId
-    if (-not $id) { return }
-    $script:Sync.PendingEventId = $null
-    try {
-        $window.FindName('navCreateRule').IsChecked = $true
-        & $script:RuleLoadEvent $id
-        & $script:RuleGoStep 1
-        [void]$window.Activate()
-    } catch { & $script:WriteLog "Couldn't open the event in Create Rule: $($_.Exception.Message)" "ERR" }
-})
-
 # Initial state of the wizard
 & $script:RuleGoStep 1
 & $script:RuleRefresh
+
+
+
+# =============================================================
+# INTUNE — EPM client settings (Windows "Elevation settings policy")
+#
+# Settings: Endpoint Privilege Management (enabled/disabled), Default
+# elevation response (+ validation), Send elevation data for reporting
+# (+ reporting scope). The Graph setting/option IDs are not hard-coded:
+# they're read from the tenant's template definitions and matched by
+# display name. If the definitions can't be read, nothing is pushed.
+# =============================================================
+$script:CsTemplate = $null
+
+$script:CsFindTemplate = {
+    if ($script:CsTemplate) { return $script:CsTemplate }
+    $tpls = @()
+    try {
+        $tpls = @(& $script:GraphGetAll "/deviceManagement/configurationPolicyTemplates?`$filter=templateFamily eq '$($script:EpmFamily)'")
+    } catch {
+        & $script:WriteLog "Template filter not accepted, scanning all templates..." "WARN"
+        $tpls = @(& $script:GraphGetAll "/deviceManagement/configurationPolicyTemplates?`$top=500")
+    }
+    $c = @($tpls | Where-Object {
+            "$($_.templateFamily)" -eq $script:EpmFamily -and
+            "$($_.displayName)" -match 'setting' -and "$($_.displayName)" -notmatch 'rule' -and
+            "$($_.lifecycleState)" -ne 'deprecated'
+         } | Sort-Object { [int]$_.version } -Descending)
+    if ($c.Count -eq 0) { throw "The 'Elevation settings policy' template wasn't found. Is Endpoint Privilege Management licensed in this tenant?" }
+    $script:CsTemplate = $c[0]
+    & $script:WriteLog "Using template '$($c[0].displayName)' v$($c[0].version) ($($c[0].id))." "INFO"
+    return $c[0]
+}
+
+# Like EpmLoadSchema, but records the template's top-level settings (TopIds)
+$script:CsLoadSchema = {
+    param([string]$TemplateId)
+    $key = "cs:$TemplateId"
+    if ($script:EpmSchemaCache.ContainsKey($key)) { return $script:EpmSchemaCache[$key] }
+    $schema = @{ TemplateId = $TemplateId; Defs = @{}; InstTpl = @{}; ValTpl = @{}; TopIds = @(); Loaded = $false }
+    & $script:WriteLog "Reading elevation settings definitions for template $TemplateId..." "INFO"
+    try {
+        $st = @(& $script:GraphGetAll "/deviceManagement/configurationPolicyTemplates('$TemplateId')/settingTemplates?`$expand=settingDefinitions")
+        foreach ($s in $st) {
+            foreach ($d in @($s.settingDefinitions)) { if ($d -and $d.id) { $schema.Defs["$($d.id)"] = $d } }
+            & $script:EpmWalkTemplate $s.settingInstanceTemplate $schema
+            if ($s.settingInstanceTemplate.settingDefinitionId) { $schema.TopIds += "$($s.settingInstanceTemplate.settingDefinitionId)" }
+        }
+    } catch {
+        & $script:WriteLog "Couldn't read template definitions: $($_.Exception.Message)" "ERR"
+    }
+    # fetch any dependent setting that wasn't expanded
+    $queue = New-Object System.Collections.Generic.Queue[string]
+    foreach ($t in $schema.TopIds) { $queue.Enqueue($t) }
+    $seen = @{}
+    while ($queue.Count -gt 0) {
+        $id = $queue.Dequeue()
+        if ($seen.ContainsKey($id)) { continue }
+        $seen[$id] = $true
+        if (-not $schema.Defs.ContainsKey($id)) {
+            try { $schema.Defs[$id] = & $script:InvokeGraph 'GET' "/deviceManagement/configurationSettings('$([System.Uri]::EscapeDataString($id))')" }
+            catch { continue }
+        }
+        $d = $schema.Defs[$id]
+        foreach ($c in @($d.childIds)) { if ($c) { $queue.Enqueue("$c") } }
+        foreach ($o in @($d.options)) { foreach ($dep in @($o.dependedOnBy)) { if ($dep -and $dep.dependedOnBy) { $queue.Enqueue("$($dep.dependedOnBy)") } } }
+    }
+    $missingTop = @($schema.TopIds | Where-Object { -not $schema.Defs.ContainsKey($_) })
+    $schema.Loaded = ($schema.TopIds.Count -gt 0 -and $missingTop.Count -eq 0)
+    if ($schema.Loaded) {
+        & $script:WriteLog "Loaded $($schema.Defs.Count) definitions: $((@($schema.TopIds | ForEach-Object { $schema.Defs[$_].displayName })) -join ', ')." "OK"
+        $script:EpmSchemaCache[$key] = $schema   # only cache a usable schema
+    }
+    return $schema
+}
+
+# Which option(s) the form wants for a definition, by display name.
+# $null = leave the setting out.
+$script:CsPick = {
+    param($Def, $M)
+    $dn = "$($Def.displayName)".Trim()
+    if ($dn -match '^Endpoint Privilege Management$') { if ($M.Enabled) { return '^enabled' } else { return '^disabled' } }
+    if ($dn -match 'default elevation response') {
+        switch ("$($M.DefaultResponse)") {
+            'deny'    { return 'deny' }
+            'support' { return 'support' }
+            'user'    { return 'user confirmation' }
+            default   { return 'not configured' }
+        }
+    }
+    if ($dn -match '^validation$') {
+        $p = @()
+        if ($M.ValJustification) { $p += 'justification' }
+        if ($M.ValWinAuth)       { $p += 'authentication' }
+        if ($p.Count) { return $p } else { return $null }
+    }
+    if ($dn -match 'send elevation data') { if ($M.SendData) { return '^yes' } else { return '^no' } }
+    if ($dn -match 'reporting scope') {
+        switch ("$($M.Scope)") {
+            'managed' { return 'managed elevations' }
+            'diag'    { return 'diagnostic data only' }
+            default   { return 'all endpoint' }
+        }
+    }
+    return $null
+}
+
+$script:CsBuildInstance = {
+    param($Schema, [string]$DefId, $M)
+    $d = $Schema.Defs[$DefId]
+    if (-not $d) { return $null }
+    $pick = & $script:CsPick $d $M
+    if ($null -eq $pick) {
+        & $script:EpmWarn "Leaving out '$($d.displayName)' (not handled by this form; Intune default applies)."
+        return $null
+    }
+    $type = "$($d.'@odata.type')"
+    $opts = @($d.options)
+    if ($type -match 'ChoiceSettingCollectionDefinition') {
+        $vals = @(foreach ($pat in @($pick)) {
+            $o = $opts | Where-Object { "$($_.displayName)" -match $pat } | Select-Object -First 1
+            if (-not $o) { throw "Option matching '$pat' not found for setting '$($d.displayName)'. Options: $((@($opts | ForEach-Object { $_.displayName })) -join ', ')" }
+            "$($o.itemId)"
+        })
+        if ($vals.Count -eq 0) { return $null }
+        return (& $script:EpmChoiceCollection $Schema $DefId $vals $true)
+    }
+    if ($type -match 'ChoiceSettingDefinition') {
+        $o = $opts | Where-Object { "$($_.displayName)" -match $pick } | Select-Object -First 1
+        if (-not $o) {
+            if ($pick -eq 'not configured') { return $null }   # no explicit option: leaving it out = not configured
+            throw "Option matching '$pick' not found for setting '$($d.displayName)'. Options: $((@($opts | ForEach-Object { $_.displayName })) -join ', ')"
+        }
+        $kids = New-Object System.Collections.Generic.List[object]
+        foreach ($dep in @(& $script:EpmDepIds $o)) {
+            $ci = & $script:CsBuildInstance $Schema $dep $M
+            if ($ci) { $kids.Add($ci) }
+        }
+        return (& $script:EpmChoice $Schema $DefId "$($o.itemId)" $kids.ToArray() $true)
+    }
+    & $script:EpmWarn "Setting '$($d.displayName)' has an unsupported type ($type); left out."
+    return $null
+}
+
+$script:CsBuildSettings = {
+    param($Schema, $M)
+    if (-not $Schema.Loaded) { throw "The elevation settings definitions couldn't be read from Intune, so nothing was sent. Check the connection and permissions, then try again." }
+    $out = New-Object System.Collections.Generic.List[object]
+    foreach ($id in $Schema.TopIds) {
+        $inst = & $script:CsBuildInstance $Schema $id $M
+        if ($inst) { $out.Add([ordered]@{ '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSetting'; settingInstance = $inst }) }
+    }
+    $hasEnable = @($out | Where-Object { "$($Schema.Defs[$_.settingInstance.settingDefinitionId].displayName)" -match '^\s*Endpoint Privilege Management\s*$' }).Count -gt 0
+    if (-not $hasEnable) {
+        throw "Couldn't find the 'Endpoint Privilege Management' setting in the template. Settings found: $((@($Schema.TopIds | ForEach-Object { $Schema.Defs[$_].displayName })) -join ', ')"
+    }
+    return $out.ToArray()
+}
+
+# Existing policy settings -> displayName/value pairs and a form model
+$script:CsFlatten = {
+    param($Schema, $Instances, $Out)
+    foreach ($i in @($Instances)) {
+        if ($null -eq $i) { continue }
+        $d  = $Schema.Defs["$($i.settingDefinitionId)"]
+        $dn = if ($d -and $d.displayName) { "$($d.displayName)" } else { "$($i.settingDefinitionId)" }
+        $nameOf = { param($v) $o = @($d.options) | Where-Object { "$($_.itemId)" -eq "$v" } | Select-Object -First 1; if ($o) { "$($o.displayName)" } else { "$v" } }
+        if ($null -ne $i.choiceSettingValue) {
+            $Out[$dn] = & $nameOf $i.choiceSettingValue.value
+            & $script:CsFlatten $Schema $i.choiceSettingValue.children $Out
+        } elseif ($null -ne $i.choiceSettingCollectionValue) {
+            $Out[$dn] = (@($i.choiceSettingCollectionValue) | ForEach-Object { & $nameOf $_.value }) -join ', '
+        } elseif ($null -ne $i.simpleSettingValue) {
+            $Out[$dn] = "$($i.simpleSettingValue.value)"
+        }
+    }
+}
+
+$script:CsReadPolicy = {
+    param($Schema, $Settings)
+    $f = [ordered]@{}
+    & $script:CsFlatten $Schema @($Settings | ForEach-Object { $_.settingInstance }) $f
+    $get = { param($pat) $k = @($f.Keys | Where-Object { $_ -match $pat }) | Select-Object -First 1; if ($k) { "$($f[$k])" } else { '' } }
+    $en   = & $get '^\s*Endpoint Privilege Management\s*$'
+    $resp = & $get 'default elevation response'
+    $val  = & $get '^validation$'
+    $send = & $get 'send elevation data'
+    $scp  = & $get 'reporting scope'
+    $model = [ordered]@{
+        Enabled          = ($en -notmatch '^disabled')
+        DefaultResponse  = if ($resp -match 'deny') { 'deny' } elseif ($resp -match 'support') { 'support' } elseif ($resp -match 'user') { 'user' } else { 'none' }
+        ValJustification = ($val -match 'justification')
+        ValWinAuth       = ($val -match 'authentication')
+        SendData         = ($send -notmatch '^no')
+        Scope            = if ($scp -match 'managed') { 'managed' } elseif ($scp -match 'only') { 'diag' } else { 'all' }
+    }
+    [pscustomobject]@{ Values = $f; Model = $model }
+}
+
+$script:CsGetPolicies = {
+    $sel = 'id,name,description,lastModifiedDateTime,settingCount,templateReference,roleScopeTagIds'
+    try {
+        $all = @(& $script:GraphGetAll "/deviceManagement/configurationPolicies?`$select=$sel&`$filter=templateReference/TemplateFamily eq '$($script:EpmFamily)'")
+    } catch {
+        $all = @(& $script:GraphGetAll "/deviceManagement/configurationPolicies?`$select=$sel")
+    }
+    @($all | Where-Object {
+        "$($_.templateReference.templateFamily)" -eq $script:EpmFamily -and
+        "$($_.templateReference.templateDisplayName)" -match 'setting' -and
+        "$($_.templateReference.templateDisplayName)" -notmatch 'rule'
+    } | Sort-Object name)
+}
+
+$script:EpmAssignmentText = {
+    param([string]$PolicyId)
+    $targets = @()
+    foreach ($a in @(& $script:GraphGetAll "/deviceManagement/configurationPolicies('$PolicyId')/assignments")) {
+        $t = "$($a.target.'@odata.type')"
+        $targets += switch -Wildcard ($t) {
+            '*allLicensedUsers*' { 'All users' }
+            '*allDevices*'       { 'All devices' }
+            '*Group*' {
+                $gid = "$($a.target.groupId)"; $gn = $gid
+                try { $gn = (& $script:InvokeGraph 'GET' "/groups/$($gid)?`$select=displayName").displayName } catch {}
+                if ($t -like '*exclusion*') { "excl. $gn" } else { $gn }
+            }
+            default { $t }
+        }
+    }
+    if ($targets.Count) { $targets -join ', ' } else { 'not assigned' }
+}
+
+$script:EpmAssignPolicy = {
+    param([string]$PolicyId, [string]$Mode, [string]$GroupId)
+    $target = switch ($Mode) {
+        'users'   { [ordered]@{ '@odata.type' = '#microsoft.graph.allLicensedUsersAssignmentTarget' } }
+        'devices' { [ordered]@{ '@odata.type' = '#microsoft.graph.allDevicesAssignmentTarget' } }
+        default   { [ordered]@{ '@odata.type' = '#microsoft.graph.groupAssignmentTarget'; groupId = $GroupId } }
+    }
+    $body = [ordered]@{ assignments = @( [ordered]@{ target = $target } ) }
+    [void](& $script:InvokeGraph 'POST' "/deviceManagement/configurationPolicies('$PolicyId')/assign" $body)
+}
+
+# ---- Client Settings page: UI -------------------------------
+$script:CsPolicies = @()
+$script:CsEditId   = $null    # policy being edited ($null = new policy)
+
+$script:CsSetResult = {
+    param([string]$Text, [string]$Kind)
+    $panel = $window.FindName('panelCsResult'); $lbl = $window.FindName('lblCsResult')
+    $c = switch ($Kind) { 'ok' { @('#1F2B26','#2F4A3E','#8FD0B2') } 'err' { @('#2B1F1F','#4A2F2F','#E57A6E') } default { @('#1C1D21','#35363B','#E8E6E1') } }
+    $panel.Background = & $script:BrushOf $c[0]; $panel.BorderBrush = & $script:BrushOf $c[1]; $lbl.Foreground = & $script:BrushOf $c[2]
+    $lbl.Text = $Text; $panel.Visibility = 'Visible'
+}
+
+$script:CsReadForm = {
+    [ordered]@{
+        Name             = $window.FindName('txtCsName').Text.Trim()
+        Description      = $window.FindName('txtCsDesc').Text.Trim()
+        Enabled          = [bool]$window.FindName('rbCsEnabled').IsChecked
+        DefaultResponse  = if ($window.FindName('rbCsRespDeny').IsChecked) { 'deny' } elseif ($window.FindName('rbCsRespSupport').IsChecked) { 'support' } elseif ($window.FindName('rbCsRespUser').IsChecked) { 'user' } else { 'none' }
+        ValJustification = [bool]$window.FindName('chkCsJust').IsChecked
+        ValWinAuth       = [bool]$window.FindName('chkCsAuth').IsChecked
+        SendData         = [bool]$window.FindName('rbCsSendYes').IsChecked
+        Scope            = if ($window.FindName('rbCsScopeManaged').IsChecked) { 'managed' } elseif ($window.FindName('rbCsScopeDiag').IsChecked) { 'diag' } else { 'all' }
+    }
+}
+
+$script:CsWriteForm = {
+    param($M)
+    if ($M.Enabled) { $window.FindName('rbCsEnabled').IsChecked = $true } else { $window.FindName('rbCsDisabled').IsChecked = $true }
+    switch ("$($M.DefaultResponse)") {
+        'deny'    { $window.FindName('rbCsRespDeny').IsChecked = $true }
+        'support' { $window.FindName('rbCsRespSupport').IsChecked = $true }
+        'user'    { $window.FindName('rbCsRespUser').IsChecked = $true }
+        default   { $window.FindName('rbCsRespNone').IsChecked = $true }
+    }
+    $window.FindName('chkCsJust').IsChecked = [bool]$M.ValJustification
+    $window.FindName('chkCsAuth').IsChecked = [bool]$M.ValWinAuth
+    if ($M.SendData) { $window.FindName('rbCsSendYes').IsChecked = $true } else { $window.FindName('rbCsSendNo').IsChecked = $true }
+    switch ("$($M.Scope)") {
+        'managed' { $window.FindName('rbCsScopeManaged').IsChecked = $true }
+        'diag'    { $window.FindName('rbCsScopeDiag').IsChecked = $true }
+        default   { $window.FindName('rbCsScopeAll').IsChecked = $true }
+    }
+    & $script:CsUpdateVisibility
+}
+
+$script:CsUpdateVisibility = {
+    $en = [bool]$window.FindName('rbCsEnabled').IsChecked
+    $window.FindName('panelCsWhenEnabled').Visibility = if ($en) { 'Visible' } else { 'Collapsed' }
+    $window.FindName('lblCsDisabledHelp').Visibility  = if ($en) { 'Collapsed' } else { 'Visible' }
+    $user = [bool]$window.FindName('rbCsRespUser').IsChecked
+    $window.FindName('panelCsValidation').Visibility = if ($user) { 'Visible' } else { 'Collapsed' }
+    $help = $window.FindName('lblCsRespHelp')
+    if ($user) {
+        $help.Text = '⚠ Lets users elevate ANY file that has no rule, after confirming. Microsoft recommends Deny all or Require support approval.'
+        $help.Foreground = & $script:BrushOf '#E0A868'
+    } else {
+        $help.Foreground = & $script:BrushOf '#A3A29E'
+        $help.Text = if ($window.FindName('rbCsRespDeny').IsChecked) { 'Files without a rule can''t be elevated.' }
+                     elseif ($window.FindName('rbCsRespSupport').IsChecked) { 'Users can request elevation; an admin approves it in Intune.' }
+                     else { 'Not configured behaves like Deny all requests.' }
+    }
+    $window.FindName('panelCsScope').Visibility = if ($window.FindName('rbCsSendYes').IsChecked) { 'Visible' } else { 'Collapsed' }
+    $window.FindName('panelCsGroup').Visibility = if ($window.FindName('rbCsAssignGroup').IsChecked) { 'Visible' } else { 'Collapsed' }
+}
+
+$script:CsSetMode = {
+    param([string]$EditId, [string]$EditName)
+    $script:CsEditId = $EditId
+    if ($EditId) {
+        $window.FindName('lblCsMode').Text = "EDITING: $EditName"
+        $window.FindName('btnCsPush').Content = 'Save changes to Intune'
+        $window.FindName('panelCsAssign').Visibility = 'Collapsed'
+        $window.FindName('lblCsEditAssignNote').Visibility = 'Visible'
+    } else {
+        $window.FindName('lblCsMode').Text = 'NEW POLICY'
+        $window.FindName('btnCsPush').Content = 'Create & deploy'
+        $window.FindName('panelCsAssign').Visibility = 'Visible'
+        $window.FindName('lblCsEditAssignNote').Visibility = 'Collapsed'
+    }
+    $window.FindName('panelCsResult').Visibility = 'Collapsed'
+}
+
+$script:CsLoadPolicies = {
+    if (-not $script:GraphToken) { & $script:WriteLog "Sign in on INTUNE → Authentication first." "WARN"; return }
+    $window.Cursor = [System.Windows.Input.Cursors]::Wait
+    try {
+        $script:CsPolicies = @(& $script:CsGetPolicies)
+        $rows = @($script:CsPolicies | ForEach-Object { [pscustomobject]@{ Name = $_.name; Modified = (& $script:FormatDate $_.lastModifiedDateTime); Description = $_.description; Id = $_.id } })
+        $window.FindName('gridCsPolicies').ItemsSource = (& $script:ToDataTable $rows @('Name','Modified','Description','Id')).DefaultView
+        & $script:WriteLog "$($rows.Count) elevation settings polic(ies) found." "OK"
+        $lbl = $window.FindName('lblCsConflict')
+        if ($rows.Count -gt 0) {
+            $lbl.Text = "$($rows.Count) elevation settings polic(ies) already exist. Make sure each device gets only one, or use matching values: Intune reports conflicting settings instead of applying them."
+            $lbl.Visibility = 'Visible'
+        } else { $lbl.Visibility = 'Collapsed' }
+    } catch { & $script:WriteLog "Couldn't load elevation settings policies: $($_.Exception.Message)" "ERR" }
+    finally { $window.Cursor = [System.Windows.Input.Cursors]::Arrow }
+}
+
+$script:CsInspect = {
+    param([string]$Id, [bool]$LoadIntoForm)
+    $window.Cursor = [System.Windows.Input.Cursors]::Wait
+    try {
+        $full   = & $script:EpmGetPolicyFull $Id
+        $schema = & $script:CsLoadSchema "$($full.Policy.templateReference.templateId)"
+        $read   = & $script:CsReadPolicy $schema $full.Settings
+        $vals   = ($read.Values.GetEnumerator() | ForEach-Object { "$($_.Key): $($_.Value)" }) -join '  ·  '
+        $assigned = '?'
+        try { $assigned = & $script:EpmAssignmentText $Id } catch {}
+        $window.FindName('lblCsPolicyInfo').Text = "$vals`nAssigned to: $assigned"
+        if ($LoadIntoForm) {
+            if (-not $schema.Loaded) { throw "The setting definitions couldn't be read, so this policy can't be edited safely." }
+            $window.FindName('txtCsName').Text = "$($full.Policy.name)"
+            $window.FindName('txtCsDesc').Text = "$($full.Policy.description)"
+            & $script:CsWriteForm $read.Model
+            & $script:CsSetMode $Id "$($full.Policy.name)"
+            & $script:WriteLog "Loaded '$($full.Policy.name)' for editing." "OK"
+        }
+    } catch { & $script:WriteLog "Couldn't read policy: $($_.Exception.Message)" "ERR" }
+    finally { $window.Cursor = [System.Windows.Input.Cursors]::Arrow }
+}
+
+$script:CsPush = {
+    param([bool]$DryRun)
+    $m = & $script:CsReadForm
+    if (-not $m.Name) { & $script:CsSetResult 'Enter a policy name.' 'err'; return }
+    if (-not $script:GraphToken) { & $script:CsSetResult 'Not connected to Microsoft Graph. Sign in on INTUNE → Authentication.' 'err'; return }
+    $assign = 'none'; $gid = $null; $gname = $null
+    if (-not $script:CsEditId) {
+        $assign = if ($window.FindName('rbCsAssignUsers').IsChecked) { 'users' } elseif ($window.FindName('rbCsAssignDevices').IsChecked) { 'devices' } elseif ($window.FindName('rbCsAssignGroup').IsChecked) { 'group' } else { 'none' }
+        if ($assign -eq 'group') {
+            $sel = $window.FindName('gridCsGroups').SelectedItem
+            if (-not $sel) { & $script:CsSetResult 'Search and select a group to deploy to.' 'err'; return }
+            $gid = "$($sel.Row['Id'])"; $gname = "$($sel.Row['Name'])"
+        }
+    }
+    if (-not $DryRun) {
+        $scp = & $script:GetTokenScopes
+        if ($scp.Count -gt 0 -and ($scp -notcontains 'DeviceManagementConfiguration.ReadWrite.All')) {
+            & $script:CsSetResult 'The current connection lacks DeviceManagementConfiguration.ReadWrite.All.' 'err'; return
+        }
+        $who = switch ($assign) { 'users' { 'All users' } 'devices' { 'All devices' } 'group' { "group '$gname'" } default { 'nobody yet' } }
+        $q = if ($script:CsEditId) { "Save changes to '$($m.Name)'? Assigned devices get them at their next check-in." }
+             elseif ($assign -eq 'none') { "Create '$($m.Name)' without assigning it yet?" }
+             else { "Create '$($m.Name)' and deploy it to $($who)?" }
+        if ([System.Windows.MessageBox]::Show($q, 'EPM client settings', [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Question) -ne [System.Windows.MessageBoxResult]::Yes) { return }
+    }
+
+    $window.Cursor = [System.Windows.Input.Cursors]::Wait
+    try {
+        if ($script:CsEditId) {
+            $full   = & $script:EpmGetPolicyFull $script:CsEditId
+            $tplId  = "$($full.Policy.templateReference.templateId)"
+            $schema = & $script:CsLoadSchema $tplId
+            $settings = & $script:CsBuildSettings $schema $m
+            $p = $full.Policy
+            $body = [ordered]@{
+                name              = $m.Name
+                description       = $m.Description
+                platforms         = $p.platforms
+                technologies      = $p.technologies
+                roleScopeTagIds   = @(if ($p.roleScopeTagIds) { $p.roleScopeTagIds } else { '0' })
+                templateReference = [ordered]@{ templateId = $tplId }
+                settings          = @($settings)
+            }
+            $json = ConvertTo-Json -InputObject $body -Depth 64
+            $window.FindName('RawOutput').Text = $json
+            if ($DryRun) { & $script:CsSetResult "Dry run OK. The PUT request is in the Raw Output tab. Nothing was changed." 'info'; return }
+            if ($window.FindName('chkBackup').IsChecked) { & $script:RuleSaveBackup $full }
+            [void](& $script:InvokeGraph 'PUT' "/deviceManagement/configurationPolicies('$($script:CsEditId)')" $json)
+            & $script:WriteLog "Elevation settings policy '$($m.Name)' updated." "OK"
+            & $script:CsSetResult "Saved '$($m.Name)'. Assigned devices get the change at their next Intune check-in." 'ok'
+        } else {
+            $tpl    = & $script:CsFindTemplate
+            $schema = & $script:CsLoadSchema "$($tpl.id)"
+            $settings = & $script:CsBuildSettings $schema $m
+            $body = [ordered]@{
+                name              = $m.Name
+                description       = $m.Description
+                platforms         = 'windows10'
+                technologies      = 'endpointPrivilegeManagement'
+                roleScopeTagIds   = @('0')
+                templateReference = [ordered]@{ templateId = "$($tpl.id)" }
+                settings          = @($settings)
+            }
+            $json = ConvertTo-Json -InputObject $body -Depth 64
+            $window.FindName('RawOutput').Text = $json
+            if ($DryRun) { & $script:CsSetResult "Dry run OK. The POST request is in the Raw Output tab. Nothing was changed." 'info'; return }
+            $created = & $script:InvokeGraph 'POST' '/deviceManagement/configurationPolicies' $json
+            $msg = "Policy '$($m.Name)' created"
+            if ($assign -ne 'none' -and $created.id) {
+                try { & $script:EpmAssignPolicy "$($created.id)" $assign $gid; $msg += ' and deployed' }
+                catch { & $script:WriteLog "Created, but assigning failed: $($_.Exception.Message)" "ERR"; $msg += ' (assignment FAILED, assign it in Intune)' }
+            }
+            & $script:WriteLog "$msg." "OK"
+            & $script:CsSetResult "$msg. Devices get it at their next Intune check-in." 'ok'
+            if ($created.id) { & $script:CsSetMode "$($created.id)" $m.Name }   # further saves edit this policy
+        }
+        & $script:CsLoadPolicies
+    } catch {
+        & $script:WriteLog "Client settings push failed: $($_.Exception.Message)" "ERR"
+        & $script:CsSetResult "Failed:`n$($_.Exception.Message)" 'err'
+    } finally { $window.Cursor = [System.Windows.Input.Cursors]::Arrow }
+}
+
+# ---- Wire up ------------------------------------------------
+foreach ($gn in 'gridCsPolicies','gridCsGroups') {
+    $window.FindName($gn).Add_AutoGeneratingColumn({ param($s, $e) if ($e.PropertyName -eq 'Id') { $e.Column.Visibility = 'Collapsed' } })
+}
+foreach ($n in 'rbCsEnabled','rbCsDisabled','rbCsRespNone','rbCsRespDeny','rbCsRespSupport','rbCsRespUser',
+               'rbCsSendYes','rbCsSendNo','rbCsAssignNone','rbCsAssignUsers','rbCsAssignDevices','rbCsAssignGroup') {
+    $window.FindName($n).Add_Checked({ & $script:CsUpdateVisibility })
+}
+$window.FindName('btnCsRefresh').Add_Click({ & $script:CsLoadPolicies })
+$window.FindName('gridCsPolicies').Add_SelectionChanged({ $sel = $this.SelectedItem; if ($sel) { & $script:CsInspect "$($sel.Row['Id'])" $false } })
+$window.FindName('btnCsEdit').Add_Click({
+    $sel = $window.FindName('gridCsPolicies').SelectedItem
+    if (-not $sel) { & $script:WriteLog "Select a policy to edit." "WARN"; return }
+    & $script:CsInspect "$($sel.Row['Id'])" $true
+})
+$window.FindName('btnCsNew').Add_Click({
+    & $script:CsSetMode $null $null
+    $window.FindName('txtCsName').Text = 'EPM – Client settings'; $window.FindName('txtCsDesc').Text = ''
+    & $script:CsWriteForm ([ordered]@{ Enabled = $true; DefaultResponse = 'none'; ValJustification = $false; ValWinAuth = $false; SendData = $true; Scope = 'all' })
+})
+$window.FindName('btnCsGroupSearch').Add_Click({
+    $q = $window.FindName('txtCsGroupSearch').Text.Trim()
+    if (-not $q) { return }
+    try {
+        $f = [System.Uri]::EscapeDataString($q.Replace("'", "''"))
+        $items = @(& $script:InvokeGraph 'GET' "https://graph.microsoft.com/v1.0/groups?`$filter=startswith(displayName,'$f')&`$select=id,displayName,description&`$top=50").value
+        $rows = @($items | ForEach-Object { [pscustomobject]@{ Name = $_.displayName; Description = $_.description; Id = $_.id } })
+        $window.FindName('gridCsGroups').ItemsSource = (& $script:ToDataTable $rows @('Name','Description','Id')).DefaultView
+    } catch { & $script:WriteLog "Group search failed: $($_.Exception.Message)" "ERR" }
+})
+$window.FindName('btnCsDryRun').Add_Click({ & $script:CsPush $true })
+$window.FindName('btnCsPush').Add_Click({ & $script:CsPush $false })
+$window.FindName('navEpmSettings').Add_Checked({
+    if ($script:GraphToken -and @($script:CsPolicies).Count -eq 0) { & $script:CsLoadPolicies }
+})
+& $script:CsUpdateVisibility
 
 
 # -------------------------------------------------------------

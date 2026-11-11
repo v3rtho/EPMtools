@@ -45,6 +45,51 @@
 | `Get-FileAttributes` | Extract publisher and CA certificates from an `.exe` for rule building |
 | **Create Rule** (Intune) | Build an elevation rule and push it to an Intune elevation rules policy via Graph |
 | **Rule Policies** (Intune) | Browse and export Intune elevation rules policies |
+| **Client Settings** (Intune) | Create, deploy and edit Intune elevation settings policies |
+
+### Reports
+
+**REPORTS → Reports** uses the Intune reporting service (`POST /beta/deviceManagement/reports/exportJobs`):
+the tool starts an export job, waits for it to finish and downloads the result.
+
+| Report | Intune report name |
+|---|---|
+| Elevation events (last 7 / 30 / 90 days or everything) | `EpmElevationReportElevationEvent` |
+| By application | `EpmAggregationReportByApplicationV2` (falls back to `EpmAggregationReportByApplication`) |
+| By publisher | `EpmAggregationReportByPublisherV2` (fallback without V2) |
+| By user | `EpmAggregationReportByUserV2` (fallback without V2) |
+| Denied | `EpmDeniedReport` |
+| Most frequent | `EpmInsightsMostFrequentElevations` |
+| Elevation trend | `EpmInsightsElevationTrend` |
+
+Every report opens in its own **report window**:
+- **Filters per column**, built from the data: a checklist with counts for columns with few distinct values
+  (e.g. ElevationType, Result, Publisher), from/to for number and date columns, "contains" for the rest,
+  plus a search across all columns and *Clear all filters*.
+- **Column chooser**, sortable and reorderable columns, multi-row selection, live row counts.
+- **Export filtered rows** or **Export selected rows** to CSV or JSON (visible columns, in their order),
+  **Copy selected** to the clipboard.
+- Elevation events: **Create rule from selection** opens the event in the Create Rule wizard.
+
+User accounts need an Intune role with **Endpoint Privilege Management Policy Authoring › View Reports**
+(`EpmPolicy.ViewReports`); without it Intune returns 403.
+The elevation event report doesn't include the signing certificate, so rules created from an event match on hash
+(add a certificate on the Rule details step if you want one).
+
+### Intune: authentication
+
+**INTUNE → Authentication** holds the one Microsoft Graph connection used by Reports and every Intune page
+(the sidebar shows whether you're connected). Choose:
+
+- **User account** — browser sign-in (OAuth2 with PKCE, delegated). Requests
+  `DeviceManagementManagedDevices.Read.All`, `DeviceManagementConfiguration.ReadWrite.All` and
+  `Group.Read.All`; admin consent may be required.
+- **Service principal + secret** — tenant ID, client ID and client secret of an app registration with the
+  same three *application* permissions and admin consent. The token renews automatically. The secret stays
+  in memory only; tenant and client ID can be remembered in `%APPDATA%\EpmTools\settings.json`.
+
+The page shows the account, tenant, token expiry and granted permissions (and any that are missing).
+**Disconnect** clears the token and secret from memory.
 
 ### Intune: create EPM rules
 
@@ -52,8 +97,7 @@ The **INTUNE → Create Rule** page builds an elevation rule and pushes it to an
 *Elevation rules policy* through Microsoft Graph (beta). The EPM agent is **not** needed for this,
 so you can run it from an admin workstation.
 
-1. **Connect to Graph** at the top of the page (asks for `DeviceManagementConfiguration.ReadWrite.All`
-   and `Group.Read.All`; admin consent may be required).
+1. Sign in once on **INTUNE → Authentication** (see below).
 2. **Source** — pick an `.exe` (SHA-256, version info, publisher and CA certificate are read
    locally), an **elevation event** from the EPM report, a saved **draft**, or start blank.
    Tick which attributes the rule should match on.
@@ -65,7 +109,20 @@ so you can run it from an admin workstation.
 5. **Review & push** — **Dry run** shows the exact Graph request in *Raw Output* without changing
    anything; **Push** saves a JSON backup of the policy to `Documents\EpmTools\Backups` first.
 
-The report window has a **Create rule from selection** button that opens the selected event in the wizard.
+### Intune: EPM client settings
+
+**INTUNE → Client Settings** creates, deploys and edits Windows *Elevation settings policies*:
+Endpoint Privilege Management (enabled/disabled), default elevation response (not configured, deny all,
+require support approval, require user confirmation with optional business justification / Windows
+authentication), send elevation data for reporting and reporting scope.
+
+- Lists existing elevation settings policies with their values and assignments, and warns when more
+  than one exists (a device should get only one, or matching values).
+- **Create & deploy** assigns the new policy to all users, all devices or a group; **Edit selected**
+  loads a policy into the form and saves changes (assignments are kept). **Dry run** shows the request.
+- The setting IDs are read from your tenant's template and matched by name; if they can't be read,
+  nothing is sent.
+
 **INTUNE → Rule Policies** lists your elevation rules policies, shows their rules in the grid and exports them as JSON.
 
 > Settings Catalog IDs are read from your tenant's own setting definitions at push time, with

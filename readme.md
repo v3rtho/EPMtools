@@ -43,6 +43,33 @@
 | `Get-ElevationRules` | Look up elevation rules by **FileName** or **CertificatePayload** |
 | `Get-ClientSettings` | Display effective client settings used by EPM on this device |
 | `Get-FileAttributes` | Extract publisher and CA certificates from an `.exe` for rule building |
+| **Create Rule** (Intune) | Build an elevation rule and push it to an Intune elevation rules policy via Graph |
+| **Rule Policies** (Intune) | Browse and export Intune elevation rules policies |
+
+### Intune: create EPM rules
+
+The **INTUNE → Create Rule** page builds an elevation rule and pushes it to an Intune
+*Elevation rules policy* through Microsoft Graph (beta). The EPM agent is **not** needed for this,
+so you can run it from an admin workstation.
+
+1. **Connect to Graph** at the top of the page (asks for `DeviceManagementConfiguration.ReadWrite.All`
+   and `Group.Read.All`; admin consent may be required).
+2. **Source** — pick an `.exe` (SHA-256, version info, publisher and CA certificate are read
+   locally), an **elevation event** from the EPM report, a saved **draft**, or start blank.
+   Tick which attributes the rule should match on.
+3. **Rule details** — file match, signature (upload a certificate or use a reusable one),
+   elevation type (Automatic, User confirmed, Support approved, Elevate as current user, Deny),
+   validation and child-process behaviour. A strength meter and a live payload preview update as you type.
+4. **Target policy** — add to an existing elevation rules policy (warns about existing rules for the
+   same file and can replace them) or create a new policy and assign it to all users, all devices or a group.
+5. **Review & push** — **Dry run** shows the exact Graph request in *Raw Output* without changing
+   anything; **Push** saves a JSON backup of the policy to `Documents\EpmTools\Backups` first.
+
+The report window has a **Create rule from selection** button that opens the selected event in the wizard.
+**INTUNE → Rule Policies** lists your elevation rules policies, shows their rules in the grid and exports them as JSON.
+
+> Settings Catalog IDs are read from your tenant's own setting definitions at push time, with
+> built-in IDs as a fallback. Try a dry run (or a test policy) the first time you use it.
 
 ### Output panes
 

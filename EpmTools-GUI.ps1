@@ -690,25 +690,77 @@ Remove-TypeData System.Array -ErrorAction SilentlyContinue
 
                         <!-- Graph connection bar -->
                         <Border Background="#26272B" CornerRadius="10" Padding="14,10" Margin="0,0,0,12">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Ellipse x:Name="ruleGraphDot" Width="8" Height="8" Fill="#C1554A"
-                                             Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <TextBlock x:Name="lblRuleGraphStatus" Text="Microsoft Graph: not connected"
-                                               FontSize="12" Foreground="#A3A29E" VerticalAlignment="Center"
-                                               TextWrapping="Wrap"/>
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse x:Name="ruleGraphDot" Width="8" Height="8" Fill="#C1554A"
+                                                 Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="lblRuleGraphStatus" Text="Microsoft Graph: not connected"
+                                                   FontSize="12" Foreground="#A3A29E" VerticalAlignment="Center"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <WrapPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,6,0,0">
+                                        <RadioButton x:Name="rbAuthUser" GroupName="AuthMode" Style="{StaticResource PillRadio}"
+                                                     Content="User sign-in" IsChecked="True" Padding="10,5"
+                                                     ToolTip="Interactive sign-in in your browser (delegated permissions)"/>
+                                        <RadioButton x:Name="rbAuthApp" GroupName="AuthMode" Style="{StaticResource PillRadio}"
+                                                     Content="Service principal" Padding="10,5"
+                                                     ToolTip="App registration with a client secret (application permissions)"/>
+                                    </WrapPanel>
+                                    <Button x:Name="btnRuleConnectGraph" Grid.Column="2" Style="{StaticResource ActionButton}"
+                                            Content="Connect to Graph" Padding="14,8" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- User sign-in -->
+                                <Grid x:Name="panelAuthUser" Margin="0,10,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Tenant (optional)" Style="{StaticResource FieldLabel}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <TextBox x:Name="txtRuleTenantId" Grid.Column="1" Style="{StaticResource InputBox}" Height="32"
+                                             ToolTip="Tenant ID or domain (e.g. contoso.onmicrosoft.com). Leave blank for your home tenant."/>
+                                </Grid>
+
+                                <!-- Service principal + client secret -->
+                                <StackPanel x:Name="panelAuthApp" Visibility="Collapsed" Margin="0,10,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Tenant ID or domain *" Style="{StaticResource FieldLabel}"/>
+                                            <TextBox x:Name="txtAppTenantId" Style="{StaticResource InputBox}" Height="32"
+                                                     ToolTip="e.g. contoso.onmicrosoft.com or the tenant GUID"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Client (application) ID *" Style="{StaticResource FieldLabel}"/>
+                                            <TextBox x:Name="txtAppClientId" Style="{StaticResource InputBox}" Height="32"
+                                                     ToolTip="Application (client) ID of the app registration"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="4">
+                                            <TextBlock Text="Client secret *" Style="{StaticResource FieldLabel}"/>
+                                            <PasswordBox x:Name="pwdAppSecret" Height="32" Background="#1C1D21" Foreground="#E8E6E1"
+                                                         BorderBrush="#35363B" BorderThickness="1" Padding="10,6"
+                                                         FontFamily="Consolas" FontSize="12" CaretBrush="#C97B3D"
+                                                         ToolTip="The secret's Value (not its ID). Kept in memory only, never saved."/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <CheckBox x:Name="chkRememberApp" Style="{StaticResource DarkCheck}" Margin="0,10,0,0"
+                                              Content="Remember tenant and client ID on this PC (the secret is never saved)"/>
+                                    <TextBlock FontSize="11" Foreground="#8C8B86" TextWrapping="Wrap" Margin="0,4,0,0"
+                                               Text="Application permissions with admin consent: DeviceManagementConfiguration.ReadWrite.All (rules), DeviceManagementManagedDevices.Read.All (elevation report), Group.Read.All (assign to a group)."/>
                                 </StackPanel>
-                                <TextBox x:Name="txtRuleTenantId" Grid.Column="1" Style="{StaticResource InputBox}"
-                                         Width="240" Height="32" Margin="12,0,0,0"
-                                         ToolTip="Tenant ID or domain (e.g. contoso.onmicrosoft.com). Leave blank for your home tenant."/>
-                                <Button x:Name="btnRuleConnectGraph" Grid.Column="2" Style="{StaticResource ActionButton}"
-                                        Content="Connect to Graph" Padding="14,8" Margin="8,0,0,0"/>
-                            </Grid>
+                            </StackPanel>
                         </Border>
 
                         <!-- Stepper -->
@@ -1231,6 +1283,10 @@ $script:GraphScope    = 'DeviceManagementManagedDevices.Read.All offline_access'
 $script:GraphScopeRules = 'DeviceManagementManagedDevices.Read.All DeviceManagementConfiguration.ReadWrite.All Group.Read.All offline_access'
 $script:GraphScopeActive = $script:GraphScope     # scope used for the current token (needed for refresh)
 $script:GraphAccount  = $null
+$script:GraphAuthMode = 'user'    # 'user' (delegated, browser) or 'app' (service principal + secret)
+$script:GraphAppId    = $null
+$script:GraphAppSecret = $null    # SecureString, memory only
+$script:EpmSettingsFile = Join-Path $env:APPDATA 'EpmTools\settings.json'
 
 # Create Rule / Intune state
 $script:Sync               = [hashtable]::Synchronized(@{ PendingEventId = $null })  # filled by the report window
@@ -1825,15 +1881,23 @@ $script:SetConnectButtons = {
     foreach ($n in 'btnConnectGraph','btnRuleConnectGraph') { $b = $window.FindName($n); if ($b) { $b.IsEnabled = $Enabled } }
 }
 
-# Returns the delegated scopes in the current access token
-$script:GetTokenScopes = {
-    if (-not $script:GraphToken) { return @() }
+# Decoded claims of the current access token
+$script:GetTokenClaims = {
+    if (-not $script:GraphToken) { return $null }
     try {
         $p  = $script:GraphToken.Split('.')[1]
         $p += '=' * ((4 - $p.Length % 4) % 4)
-        $c  = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($p.Replace('-','+').Replace('_','/'))) | ConvertFrom-Json
-        return @("$($c.scp)" -split ' ' | Where-Object { $_ })
-    } catch { return @() }
+        return ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($p.Replace('-','+').Replace('_','/'))) | ConvertFrom-Json)
+    } catch { return $null }
+}
+
+# Permissions in the current token: delegated scopes (scp) or application roles (roles)
+$script:GetTokenScopes = {
+    $c = & $script:GetTokenClaims
+    if (-not $c) { return @() }
+    $out = @("$($c.scp)" -split ' ' | Where-Object { $_ })
+    $out += @($c.roles | Where-Object { $_ } | ForEach-Object { "$_" })
+    return $out
 }
 
 $script:StartGraphSignIn = {
@@ -1959,6 +2023,7 @@ $script:StartGraphSignIn = {
                     $script:GraphRefresh = $res.Refresh
                     $script:GraphExpiry  = (Get-Date).AddSeconds($res.ExpiresIn - 60)
                     $script:GraphAccount = $res.Account
+                    $script:GraphAuthMode = 'user'; $script:GraphAppId = $null; $script:GraphAppSecret = $null
                     $script:EpmSchemaCache = @{}; $script:EpmRulesTemplate = $null   # new tenant/session
                     & $script:SetGraphStatus "Connected as: $($res.Account)" '#5FA88A'
                     $window.FindName('btnLoadElevationReport').IsEnabled = $true
@@ -1986,9 +2051,106 @@ $window.FindName('btnConnectGraph').Add_Click({
     & $script:StartGraphSignIn $window.FindName('txtTenantId').Text.Trim() $script:GraphScope
 })
 
+# Service principal (app registration + client secret) — client credentials flow
+$script:StartAppSignIn = {
+    param([string]$Tenant, [string]$ClientId, [System.Security.SecureString]$Secret)
+    if (-not $Tenant -or $Tenant -in @('common','organizations','consumers')) {
+        [void][System.Windows.MessageBox]::Show('Enter your tenant ID or domain. A service principal must sign in to a specific tenant.', 'Service principal'); return
+    }
+    if ($ClientId -notmatch '^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$') {
+        [void][System.Windows.MessageBox]::Show('The client ID must be the application (client) ID GUID of the app registration.', 'Service principal'); return
+    }
+    if (-not $Secret -or $Secret.Length -eq 0) {
+        [void][System.Windows.MessageBox]::Show('Enter the client secret value.', 'Service principal'); return
+    }
+    # cancel a pending browser sign-in, if any
+    if ($script:AuthTimer) { $script:AuthTimer.Stop(); $script:AuthTimer = $null }
+
+    $prev = @{ Tenant = $script:GraphTenant; AppId = $script:GraphAppId; Secret = $script:GraphAppSecret }
+    $script:GraphTenant    = $Tenant
+    $script:GraphAppId     = $ClientId
+    $script:GraphAppSecret = $Secret
+    & $script:SetGraphStatus "Signing in as service principal..." '#D9A441'
+    & $script:SetConnectButtons $false
+    $window.Cursor = [System.Windows.Input.Cursors]::Wait
+    try {
+        $tok = & $script:GetAppToken
+        $script:GraphToken     = $tok.access_token
+        $script:GraphRefresh   = $null
+        $script:GraphExpiry    = (Get-Date).AddSeconds([int]$tok.expires_in - 60)
+        $script:GraphAuthMode  = 'app'
+        $script:EpmSchemaCache = @{}; $script:EpmRulesTemplate = $null; $script:EpmPolicies = @()
+        $claims = & $script:GetTokenClaims
+        $name   = if ($claims.app_displayname) { "$($claims.app_displayname)" } else { $ClientId }
+        $script:GraphAccount = "app '$name'"
+        & $script:SetGraphStatus "Connected as service principal: $name" '#5FA88A'
+        $window.FindName('btnLoadElevationReport').IsEnabled = $true
+        & $script:WriteLog "Signed in as service principal '$name' in tenant $Tenant. Token valid until $($script:GraphExpiry.ToString('HH:mm:ss'))." "OK"
+
+        $roles   = & $script:GetTokenScopes
+        $missing = @('DeviceManagementConfiguration.ReadWrite.All','DeviceManagementManagedDevices.Read.All','Group.Read.All') |
+                   Where-Object { $roles -notcontains $_ }
+        if (@($roles).Count -eq 0) {
+            & $script:WriteLog "The app has no application permissions with admin consent yet. Graph calls will fail with 403." "WARN"
+        } elseif ($missing) {
+            & $script:WriteLog "App is missing application permission(s): $($missing -join ', '). Grant them and give admin consent in Entra ID." "WARN"
+        }
+
+        if ($window.FindName('chkRememberApp').IsChecked) {
+            try {
+                New-Item -ItemType Directory -Force -Path (Split-Path $script:EpmSettingsFile) | Out-Null
+                ConvertTo-Json -InputObject ([ordered]@{ appTenantId = $Tenant; appClientId = $ClientId; authMode = 'app' }) |
+                    Set-Content -LiteralPath $script:EpmSettingsFile -Encoding UTF8
+            } catch { & $script:WriteLog "Couldn't save settings: $($_.Exception.Message)" "WARN" }
+        } elseif (Test-Path -LiteralPath $script:EpmSettingsFile) {
+            Remove-Item -LiteralPath $script:EpmSettingsFile -ErrorAction SilentlyContinue
+        }
+        $window.FindName('pwdAppSecret').Clear()
+    } catch {
+        # keep the previous connection's details so its token can still renew
+        $script:GraphTenant = $prev.Tenant; $script:GraphAppId = $prev.AppId; $script:GraphAppSecret = $prev.Secret
+        $err = "$($_.Exception.Message)"
+        $hint = if ($err -match 'AADSTS7000215') { ' (wrong secret: use the secret Value, not its ID)' }
+                elseif ($err -match 'AADSTS7000222') { ' (the secret has expired)' }
+                elseif ($err -match 'AADSTS700016') { ' (app not found in this tenant: check client ID and tenant)' }
+                elseif ($err -match 'AADSTS90002') { ' (tenant not found)' }
+                else { '' }
+        if ($script:GraphToken) { & $script:SetGraphStatus "Service principal sign-in failed; still connected as $($script:GraphAccount)" '#D9A441' }
+        else { & $script:SetGraphStatus "Service principal sign-in failed" '#C1554A' }
+        & $script:WriteLog "Service principal sign-in failed: $err$hint" "ERR"
+    } finally {
+        & $script:SetConnectButtons $true
+        $window.Cursor = [System.Windows.Input.Cursors]::Arrow
+    }
+}
+
 $window.FindName('btnRuleConnectGraph').Add_Click({
-    & $script:StartGraphSignIn $window.FindName('txtRuleTenantId').Text.Trim() $script:GraphScopeRules
+    if ($window.FindName('rbAuthApp').IsChecked) {
+        & $script:StartAppSignIn $window.FindName('txtAppTenantId').Text.Trim() `
+                                 $window.FindName('txtAppClientId').Text.Trim() `
+                                 $window.FindName('pwdAppSecret').SecurePassword
+    } else {
+        & $script:StartGraphSignIn $window.FindName('txtRuleTenantId').Text.Trim() $script:GraphScopeRules
+    }
 })
+
+$window.FindName('rbAuthUser').Add_Checked({
+    $window.FindName('panelAuthUser').Visibility = 'Visible'; $window.FindName('panelAuthApp').Visibility = 'Collapsed'
+})
+$window.FindName('rbAuthApp').Add_Checked({
+    $window.FindName('panelAuthUser').Visibility = 'Collapsed'; $window.FindName('panelAuthApp').Visibility = 'Visible'
+})
+
+# Restore remembered service principal details (never the secret)
+if (Test-Path -LiteralPath $script:EpmSettingsFile) {
+    try {
+        $cfg = Get-Content -LiteralPath $script:EpmSettingsFile -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($cfg.appTenantId) { $window.FindName('txtAppTenantId').Text = "$($cfg.appTenantId)" }
+        if ($cfg.appClientId) { $window.FindName('txtAppClientId').Text = "$($cfg.appClientId)" }
+        $window.FindName('chkRememberApp').IsChecked = $true
+        if ("$($cfg.authMode)" -eq 'app') { $window.FindName('rbAuthApp').IsChecked = $true }
+    } catch {}
+}
 
 # Fetches all elevation events (all pages), keeps the raw events by id for
 # the Create Rule page and returns the flattened rows used by the report.
@@ -2262,8 +2424,41 @@ $script:EpmWarn = {
 }
 
 # ---- Graph plumbing -----------------------------------------
+# Service principal: client credentials grant (no refresh token, just ask again)
+$script:GetAppToken = {
+    $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($script:GraphAppSecret)
+    try { $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
+    finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+    $body = "client_id=$([System.Uri]::EscapeDataString($script:GraphAppId))" +
+            "&client_secret=$([System.Uri]::EscapeDataString($plain))" +
+            "&scope=$([System.Uri]::EscapeDataString('https://graph.microsoft.com/.default'))" +
+            "&grant_type=client_credentials"
+    $plain = $null
+    try {
+        Invoke-RestMethod -Method POST -ErrorAction Stop `
+            -ContentType 'application/x-www-form-urlencoded' `
+            -Uri "https://login.microsoftonline.com/$($script:GraphTenant)/oauth2/v2.0/token" `
+            -Body $body
+    } catch {
+        $msg = $_.Exception.Message
+        $d = $null
+        if ($_.ErrorDetails -and $_.ErrorDetails.Message) { $d = $_.ErrorDetails.Message }
+        if (-not $d) { try { $sr = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream()); $d = $sr.ReadToEnd() } catch {} }
+        if ($d) { try { $j = $d | ConvertFrom-Json; if ($j.error_description) { $msg = ("$($j.error_description)" -split "`r?`n")[0] } } catch {} }
+        throw $msg
+    } finally { $body = $null }
+}
+
 $script:EnsureGraphToken = {
     if (-not $script:GraphToken) { throw "Not connected to Microsoft Graph. Click 'Connect to Graph' first." }
+    if ($script:GraphAuthMode -eq 'app' -and (Get-Date) -ge $script:GraphExpiry) {
+        & $script:WriteLog "App token expired — requesting a new one..." "INFO"
+        $tok = & $script:GetAppToken
+        $script:GraphToken  = $tok.access_token
+        $script:GraphExpiry = (Get-Date).AddSeconds([int]$tok.expires_in - 60)
+        & $script:WriteLog "Token renewed. Valid until $($script:GraphExpiry.ToString('HH:mm:ss'))." "OK"
+        return
+    }
     if ($script:GraphRefresh -and (Get-Date) -ge $script:GraphExpiry) {
         & $script:WriteLog "Access token expired — refreshing silently..." "INFO"
         $body = "client_id=$([System.Uri]::EscapeDataString($script:GraphClient))" +
@@ -3378,7 +3573,11 @@ $script:RuleBuildSummary = {
     } elseif ($scp -contains 'DeviceManagementConfiguration.ReadWrite.All') {
         $lbl.Text = "✓ Signed in as $($script:GraphAccount) with DeviceManagementConfiguration.ReadWrite.All"; $lbl.Foreground = & $script:BrushOf '#5FA88A'
     } else {
-        $lbl.Text = '✖ The current sign-in lacks DeviceManagementConfiguration.ReadWrite.All. Click "Connect to Graph" at the top of this page to sign in again.'
+        $lbl.Text = if ($script:GraphAuthMode -eq 'app') {
+            "✖ $($script:GraphAccount) lacks the application permission DeviceManagementConfiguration.ReadWrite.All. Grant it with admin consent in Entra ID, then connect again."
+        } else {
+            '✖ The current sign-in lacks DeviceManagementConfiguration.ReadWrite.All. Click "Connect to Graph" at the top of this page to sign in again.'
+        }
         $lbl.Foreground = & $script:BrushOf '#E57A6E'
     }
     $window.FindName('panelPushResult').Visibility = 'Collapsed'
@@ -3410,7 +3609,8 @@ $script:RulePush = {
     if (-not $DryRun) {
         $scp = & $script:GetTokenScopes
         if ($scp.Count -gt 0 -and ($scp -notcontains 'DeviceManagementConfiguration.ReadWrite.All')) {
-            & $script:SetResult 'Your sign-in lacks DeviceManagementConfiguration.ReadWrite.All. Use "Connect to Graph" on this page and sign in again.' 'err'
+            $fix = if ($script:GraphAuthMode -eq 'app') { 'Grant the app this application permission with admin consent, then connect again.' } else { 'Use "Connect to Graph" on this page and sign in again.' }
+            & $script:SetResult "The current connection lacks DeviceManagementConfiguration.ReadWrite.All. $fix" 'err'
             return
         }
         $where = if ($t.Mode -eq 'existing') { "policy '$($t.PolicyName)'" } else { "a new policy '$($t.Name)'" }
